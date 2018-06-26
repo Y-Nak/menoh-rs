@@ -52,6 +52,43 @@ pub type menoh_variable_profile_table_handle = *mut menoh_variable_profile_table
 #[allow(non_camel_case_types)]
 pub type menoh_variable_profile_table_builder_handle = *mut menoh_variable_profile_table_builder;
 
+#[allow(non_upper_case_globals)]
+pub const menoh_error_code_success: menoh_error_code = 0;
+#[allow(non_upper_case_globals)]
+pub const menoh_error_code_std_error: menoh_error_code = 1;
+#[allow(non_upper_case_globals)]
+pub const menoh_error_code_unknown_error: menoh_error_code = 2;
+#[allow(non_upper_case_globals)]
+pub const menoh_error_code_invalid_filename: menoh_error_code = 3;
+#[allow(non_upper_case_globals)]
+pub const menoh_error_code_unsupported_onnx_opset_version: menoh_error_code = 4;
+#[allow(non_upper_case_globals)]
+pub const menoh_error_code_onnx_parse_error: menoh_error_code = 5;
+#[allow(non_upper_case_globals)]
+pub const menoh_error_code_invalid_dtype: menoh_error_code = 6;
+#[allow(non_upper_case_globals)]
+pub const menoh_error_code_invalid_attribute_type: menoh_error_code = 7;
+#[allow(non_upper_case_globals)]
+pub const menoh_error_code_unsupported_operator_attribute: menoh_error_code = 8;
+#[allow(non_upper_case_globals)]
+pub const menoh_error_code_dimension_mismatch: menoh_error_code = 9;
+#[allow(non_upper_case_globals)]
+pub const menoh_error_code_variable_not_found: menoh_error_code = 10;
+#[allow(non_upper_case_globals)]
+pub const menoh_error_code_index_out_of_range: menoh_error_code = 11;
+#[allow(non_upper_case_globals)]
+pub const menoh_error_code_json_parse_error: menoh_error_code = 12;
+#[allow(non_upper_case_globals)]
+pub const menoh_error_code_invalid_backend_name: menoh_error_code = 13;
+#[allow(non_upper_case_globals)]
+pub const menoh_error_code_unsupported_operator: menoh_error_code = 14;
+#[allow(non_upper_case_globals)]
+pub const menoh_error_code_failed_to_configure_operator: menoh_error_code = 15;
+#[allow(non_upper_case_globals)]
+pub const menoh_error_code_backend_error: menoh_error_code = 16;
+#[allow(non_upper_case_globals)]
+pub const menoh_error_code_same_named_variable_already_exist: menoh_error_code = 17;
+
 #[link(name = "menoh")]
 extern "C" {
     pub fn menoh_get_last_error_message() -> *const c_char;
