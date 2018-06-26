@@ -89,6 +89,9 @@ pub const menoh_error_code_backend_error: menoh_error_code = 16;
 #[allow(non_upper_case_globals)]
 pub const menoh_error_code_same_named_variable_already_exist: menoh_error_code = 17;
 
+#[allow(non_upper_case_globals)]
+pub const menoh_dtype_float: menoh_dtype = 0;
+
 #[link(name = "menoh")]
 extern "C" {
     pub fn menoh_get_last_error_message() -> *const c_char;
@@ -149,10 +152,10 @@ extern "C" {
         dst_size: *mut int32_t,
     ) -> menoh_error_code;
     pub fn menoh_variable_profile_table_get_dims_at(
-        variable_profile_table: menoh_variable_profile_table_builder_handle,
+        variable_profile_table: menoh_variable_profile_table_handle,
         variable_name: *const c_char,
         index: int32_t,
-        dst_size: int32_t,
+        dst_size: *mut int32_t,
     ) -> menoh_error_code;
 
     pub fn menoh_make_model_builder(
