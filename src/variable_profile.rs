@@ -28,7 +28,7 @@ pub struct VariableProfileTableBuilder {
     handle: ffi::menoh_variable_profile_table_builder_handle,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub enum Dtype {
     Float,
 }
@@ -100,7 +100,7 @@ impl VariableProfileTableBuilder {
                 })?;
                 return Ok(());
             }
-            _ => Err(Error::InvalidDtype),
+            _ => Err(Error::DimensionMismatch),
         }
     }
 
@@ -149,13 +149,13 @@ impl Drop for VariableProfileTableBuilder {
 }
 
 impl Dtype {
-    fn value(&self) -> ffi::menoh_dtype {
+    pub fn value(&self) -> ffi::menoh_dtype {
         match *self {
             Dtype::Float => ffi::menoh_dtype_float,
         }
     }
 
-    fn from(dtype: ffi::menoh_dtype) -> Self {
+    pub fn from(dtype: ffi::menoh_dtype) -> Self {
         match dtype {
             ffi::menoh_dtype_float => Dtype::Float,
             _ => unreachable!(),

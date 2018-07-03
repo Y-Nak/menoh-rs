@@ -12,7 +12,7 @@ use ffi;
 use model_data::ModelData;
 use variable_profile::{Dtype, VariableProfileTable};
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct Buffer<'a> {
     ptr: *mut c_void,
     size: usize,
@@ -118,26 +118,107 @@ impl<'a, 's> ModelBuilder<'a, 's> {
     }
 }
 
+impl<'a, 's> Model<'a, 's> {
+    pub fn run(&mut self) -> Result<(), Error> {
+        cvt_r(|| unsafe { ffi::menoh_model_run(self.handle) })?;
+        Ok(())
+    }
+
+    pub fn get_attached_buffer(&self, name: &str) -> Result<Buffer<'a>, Error> {
+        self.external_bufs
+            .get(name)
+            .ok_or(Error::VariableNotFound)
+            .map(|buf| *buf)
+    }
+
+    pub fn get_internal_buffer(&self, name: &str) -> Result<Buffer, Error> {
+        let name_c_expr = CString::new(name).map_err(|_| Error::VariableNotFound)?;
+        let dtype = self.get_dtype(&name_c_expr)?;
+        let len = self.get_variable_len(&name_c_expr)?;
+
+        let ptr = self.get_buf_handle(&name_c_expr)?;
+        // TODO: Think on dtype handling
+        let size = match dtype {
+            Dtype::Float => len * mem::size_of::<f32>(),
+        };
+
+        Ok(Buffer {
+            ptr,
+            size,
+            len,
+            dtype,
+            _phantom: PhantomData,
+        })
+    }
+
+    fn get_dtype(&self, name: &CString) -> Result<Dtype, Error> {
+        let mut dtype = ffi::menoh_dtype::default();
+        cvt_r(|| unsafe {
+            ffi::menoh_model_get_variable_dtype(
+                self.handle,
+                name.as_ptr(),
+                &mut dtype as *mut ffi::menoh_dtype,
+            )
+        })?;
+        Ok(Dtype::from(dtype))
+    }
+
+    fn get_variable_len(&self, name: &CString) -> Result<usize, Error> {
+        let dims_size = self.get_variable_dims_size(name)?;
+
+        let mut dims = Vec::new();
+        for i in 0..dims_size {
+            dims.push(self.get_variable_dims_at(name, i)?)
+        }
+        Ok(dims.iter().fold(1, |acc, x| acc * x) as usize)
+    }
+
+    fn get_variable_dims_size(&self, name: &CString) -> Result<i32, Error> {
+        let mut dims_size = libc::int32_t::default();
+        cvt_r(|| unsafe {
+            ffi::menoh_model_get_variable_dims_size(
+                self.handle,
+                name.as_ptr(),
+                &mut dims_size as *mut libc::int32_t,
+            )
+        })?;
+        Ok(dims_size)
+    }
+
+    fn get_variable_dims_at(&self, name: &CString, index: i32) -> Result<i32, Error> {
+        let mut dst_dim = libc::int32_t::default();
+        cvt_r(|| unsafe {
+            ffi::menoh_model_get_variable_dims_at(
+                self.handle,
+                name.as_ptr(),
+                index as i32,
+                &mut dst_dim as *mut libc::int32_t,
+            )
+        })?;
+        Ok(dst_dim)
+    }
+
+    fn get_buf_handle(&self, name: &CString) -> Result<*mut c_void, Error> {
+        let mut handle: *mut c_void = std::ptr::null_mut();
+        cvt_r(|| unsafe {
+            ffi::menoh_model_get_variable_buffer_handle(
+                self.handle,
+                name.as_ptr(),
+                &mut handle as *mut *mut c_void,
+            )
+        })?;
+        Ok(handle)
+    }
+}
+
 impl<'a, 's> Drop for ModelBuilder<'a, 's> {
     fn drop(&mut self) {
         unsafe { ffi::menoh_delete_model_builder(self.handle) }
     }
 }
 
-//impl<'a, 's> Model<'a, 's> {
-//    pub fn run(&mut self) -> Result<(), Error> {
-//        cvt_r(|| unsafe { ffi::menoh_model_run(self.handle) })?;
-//        Ok(())
-//    }
-//
-//    pub fn get_attached_buffer(&self, name: &str) -> Option<&'a Buffer> {
-//        self.external_bufs.get(name)
-//    }
-//
-//    pub fn get_attached_buffer_mut(&mut self, name: &str) -> Option<&'a mut Buffer> {
-//        self.external_bufs.get_mut(name)
-//    }
-//
-//    // pub fn get_internal_buffer(&self, name: &str) -> Option<Buffer> {}
-//    // pub fn get_internal_buffer_mut(&mut self, name: &str) -> Option<&mut Buffer> {}
-//}
+impl<'a, 's> Drop for Model<'a, 's> {
+    fn drop(&mut self) {
+        unsafe { ffi::menoh_delete_model(self.handle) }
+    }
+}
