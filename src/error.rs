@@ -3,12 +3,9 @@
 use std::error;
 use std::ffi::CStr;
 use std::fmt;
-use std::result;
 
 use ffi;
 use ffi::menoh_get_last_error_message;
-
-pub type Result<T> = result::Result<T, Error>;
 
 #[derive(Debug, PartialEq)]
 pub enum Error {
@@ -46,7 +43,7 @@ fn get_last_error_message<'a>() -> &'a str {
 /// * `ec` - If `ec` is NOT defined in `menoh::ffi`, then this function cause panic.
 ///
 /// ***In normal use case, no need to use this function directly.***
-pub fn cvt(ec: ffi::menoh_error_code) -> Result<ffi::menoh_error_code> {
+pub fn cvt(ec: ffi::menoh_error_code) -> Result<ffi::menoh_error_code, Error> {
     match ec {
         ffi::menoh_error_code_success => Ok(ffi::menoh_error_code_success),
         ffi::menoh_error_code_std_error => Err(Error::StdError),
@@ -81,7 +78,7 @@ pub fn cvt(ec: ffi::menoh_error_code) -> Result<ffi::menoh_error_code> {
 /// * `f` - If error_code returned by `f` is NOT defined in `menoh::ffi`, then this function cause panic.
 ///
 /// ***In normal use case, no need to use this function directly.***
-pub fn cvt_r<F>(mut f: F) -> Result<ffi::menoh_error_code>
+pub fn cvt_r<F>(mut f: F) -> Result<ffi::menoh_error_code, Error>
 where
     F: FnMut() -> ffi::menoh_error_code,
 {

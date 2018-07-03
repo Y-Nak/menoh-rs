@@ -1,12 +1,13 @@
 //! This module contains variable profile of ONNX model related.
 //!
 //!
+use std;
 use std::ffi::CString;
 use std::mem;
 
 use libc::int32_t;
 
-use error::{cvt_r, Error, Result};
+use error::{cvt_r, Error};
 use ffi;
 use model_data::ModelData;
 
@@ -27,9 +28,12 @@ pub struct VariableProfileTableBuilder {
     handle: ffi::menoh_variable_profile_table_builder_handle,
 }
 
+#[derive(Clone)]
 pub enum Dtype {
     Float,
 }
+
+type Result<T> = std::result::Result<T, Error>;
 
 impl VariableProfileTable {
     /// Get Variable profile detail by using variable name.
@@ -47,6 +51,11 @@ impl VariableProfileTable {
 
         Ok(VariableProfile { dtype, dims })
     }
+
+    #[doc(hidden)]
+    pub unsafe fn get_handle(&self) -> ffi::menoh_variable_profile_table_handle {
+        self.handle
+    }
 }
 
 impl VariableProfileTableBuilder {
@@ -60,10 +69,8 @@ impl VariableProfileTableBuilder {
         })?;
         Ok(VariableProfileTableBuilder { handle })
     }
-
     /// Add input profile.
-    ///
-    /// ***dims order is must be [N_batches, Channel, Hehgit, Width] or [Height, Width]***
+    /// dims length must be 2 or 4.
     pub fn add_input_profile(&mut self, name: &str, dtype: Dtype, dims: &[i32]) -> Result<()> {
         let name = CString::new(name).map_err(|_| Error::VariableNotFound)?;
         match dims.len() {

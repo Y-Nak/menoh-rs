@@ -45,7 +45,7 @@ pub type menoh_model_data_handle = *mut menoh_model_data;
 #[allow(non_camel_case_types)]
 pub type menoh_model_handle = *mut menoh_model;
 #[allow(non_camel_case_types)]
-pub type menoh_model_builder_handle = *mut menoh_model;
+pub type menoh_model_builder_handle = *mut menoh_model_builder;
 
 #[allow(non_camel_case_types)]
 pub type menoh_variable_profile_table_handle = *mut menoh_variable_profile_table;
@@ -159,7 +159,7 @@ extern "C" {
     ) -> menoh_error_code;
 
     pub fn menoh_make_model_builder(
-        variable_profile_table: menoh_variable_profile_table_builder_handle,
+        variable_profile_table: menoh_variable_profile_table_handle,
         dst_handle: *mut menoh_model_builder_handle,
     ) -> menoh_error_code;
     pub fn menoh_delete_model_builder(handle: menoh_model_builder_handle);
