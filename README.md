@@ -1,2 +1,3 @@
 # WIP
-## menoh-rs will be released 2018/06/27
+
+**This is my first Rust application, created for self-study purpose.**
