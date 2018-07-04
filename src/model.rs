@@ -7,10 +7,11 @@ use std::{mem, slice};
 use libc;
 use libc::c_void;
 
+use dtype::{Dtype, DtypeCompatible};
 use error::{cvt_r, Error};
 use ffi;
 use model_data::ModelData;
-use variable_profile::{Dtype, VariableProfileTable};
+use variable_profile::VariableProfileTable;
 
 pub struct ModelBuilder<'a, 's> {
     handle: ffi::menoh_model_builder_handle,
@@ -44,12 +45,15 @@ impl<'a, 's> ModelBuilder<'a, 's> {
         })
     }
 
-    // TODO: Varidate external buffer size
-    pub fn attach_external_buffer<T: Default + Copy>(
+    // TODO: Validate external buffer size
+    pub fn attach_external_buffer<T>(
         &mut self,
         name: &'s str,
         buffer: &'a mut [T],
-    ) -> Result<(), Error> {
+    ) -> Result<(), Error>
+    where
+        T: DtypeCompatible,
+    {
         let name_c_expr = CString::new(name).map_err(|_| Error::VariableNotFound)?;
         let raw_buffer = RawBuffer::from(buffer);
         cvt_r(|| unsafe {
@@ -94,45 +98,57 @@ impl<'a, 's> Model<'a, 's> {
         Ok(())
     }
 
-    pub fn get_attached_buffer<T>(&self, name: &str) -> Result<&'a [T], Error> {
+    pub fn get_attached_buffer<T>(&self, name: &str) -> Result<&'a [T], Error>
+    where
+        T: DtypeCompatible,
+    {
         let raw_buf = self.external_bufs.get(name).ok_or(Error::VariableNotFound)?;
+        let name_c_expr = CString::new(name).map_err(|_| Error::VariableNotFound)?;
+
+        self.validate_dtype::<T>(&name_c_expr)?;
+
         Ok(raw_buf.as_slice())
     }
 
-    pub fn get_attached_buffer_mut<T>(&self, name: &str) -> Result<&'a mut [T], Error> {
+    pub fn get_attached_buffer_mut<T>(&self, name: &str) -> Result<&'a mut [T], Error>
+    where
+        T: DtypeCompatible,
+    {
         let raw_buf = self.external_bufs.get(name).ok_or(Error::VariableNotFound)?;
+        let name_c_expr = CString::new(name).map_err(|_| Error::VariableNotFound)?;
+
+        self.validate_dtype::<T>(&name_c_expr)?;
+
         Ok(raw_buf.as_mut_slice())
     }
 
-    pub fn get_internal_buffer<T>(&self, name: &str) -> Result<&[T], Error> {
+    pub fn get_internal_buffer<T>(&self, name: &str) -> Result<&[T], Error>
+    where
+        T: DtypeCompatible,
+    {
         let name_c_expr = CString::new(name).map_err(|_| Error::VariableNotFound)?;
-        //let dtype = self.get_dtype(&name_c_expr)?;
+
+        self.validate_dtype::<T>(&name_c_expr)?;
+
         let len = self.get_variable_len(&name_c_expr)?;
-
         let ptr = self.get_buf_handle(&name_c_expr)?;
-        //// TODO: Think on dtype handling
-        //let size = match dtype {
-        //    Dtype::Float => len * mem::size_of::<f32>(),
-        //};
-
         unsafe { Ok(slice::from_raw_parts(ptr as _, len)) }
     }
 
-    pub fn get_internal_buffer_mut<T>(&self, name: &str) -> Result<&[T], Error> {
+    pub fn get_internal_buffer_mut<T>(&self, name: &str) -> Result<&[T], Error>
+    where
+        T: DtypeCompatible,
+    {
         let name_c_expr = CString::new(name).map_err(|_| Error::VariableNotFound)?;
-        //let dtype = self.get_dtype(&name_c_expr)?;
+
+        self.validate_dtype::<T>(&name_c_expr)?;
+
         let len = self.get_variable_len(&name_c_expr)?;
-
         let ptr = self.get_buf_handle(&name_c_expr)?;
-        //// TODO: Think on dtype handling
-        //let size = match dtype {
-        //    Dtype::Float => len * mem::size_of::<f32>(),
-        //};
-
         unsafe { Ok(slice::from_raw_parts_mut(ptr as _, len)) }
     }
 
-    pub fn get_dtype(&self, name: &CString) -> Result<Dtype, Error> {
+    pub fn get_variable_dtype(&self, name: &CString) -> Result<Dtype, Error> {
         let mut dtype = ffi::menoh_dtype::default();
         cvt_r(|| unsafe {
             ffi::menoh_model_get_variable_dtype(
@@ -144,7 +160,7 @@ impl<'a, 's> Model<'a, 's> {
         Ok(Dtype::from(dtype))
     }
 
-    fn get_variable_len(&self, name: &CString) -> Result<usize, Error> {
+    pub fn get_variable_len(&self, name: &CString) -> Result<usize, Error> {
         let dims_size = self.get_variable_dims_size(name)?;
 
         let mut dims = Vec::new();
@@ -154,7 +170,7 @@ impl<'a, 's> Model<'a, 's> {
         Ok(dims.iter().fold(1, |acc, x| acc * x) as usize)
     }
 
-    fn get_variable_dims_size(&self, name: &CString) -> Result<i32, Error> {
+    pub fn get_variable_dims_size(&self, name: &CString) -> Result<i32, Error> {
         let mut dims_size = libc::int32_t::default();
         cvt_r(|| unsafe {
             ffi::menoh_model_get_variable_dims_size(
@@ -166,7 +182,7 @@ impl<'a, 's> Model<'a, 's> {
         Ok(dims_size)
     }
 
-    fn get_variable_dims_at(&self, name: &CString, index: i32) -> Result<i32, Error> {
+    pub fn get_variable_dims_at(&self, name: &CString, index: i32) -> Result<i32, Error> {
         let mut dst_dim = libc::int32_t::default();
         cvt_r(|| unsafe {
             ffi::menoh_model_get_variable_dims_at(
@@ -190,10 +206,22 @@ impl<'a, 's> Model<'a, 's> {
         })?;
         Ok(handle)
     }
+
+    fn validate_dtype<T>(&self, name: &CString) -> Result<(), Error>
+    where
+        T: DtypeCompatible,
+    {
+        let dtype = self.get_variable_dtype(&name)?;
+        if dtype.is_compatible::<T>() {
+            Ok(())
+        } else {
+            Err(Error::InvalidDtype)
+        }
+    }
 }
 
 impl<'a> RawBuffer<'a> {
-    fn from<T: Copy + Default>(external_buffer: &'a mut [T]) -> RawBuffer<'a> {
+    fn from<T: DtypeCompatible>(external_buffer: &'a mut [T]) -> RawBuffer<'a> {
         RawBuffer {
             data: external_buffer.as_mut_ptr() as _,
             len: external_buffer.len(),
