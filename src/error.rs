@@ -9,6 +9,7 @@ use ffi::menoh_get_last_error_message;
 
 #[derive(Debug, PartialEq)]
 pub enum Error {
+    // C-API Defined error
     StdError,
     UnknownError,
     InvalidFileName,
@@ -26,6 +27,8 @@ pub enum Error {
     FailedToConfigureOperator,
     BackendError,
     SameNamedVariableAlreadyExist,
+
+    // menoh-rs custom error
     InvalidBufferSize,
     NotInternalBuffer,
 }
@@ -89,16 +92,16 @@ where
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let msg = get_last_error_message();
+        let msg = match *self {
+            Error::InvalidBufferSize => "Buffer size is invalid",
+            Error::NotInternalBuffer => "Specified buffer is attached buffer",
+            _ => get_last_error_message(),
+        };
         write!(f, "{}", msg)
     }
 }
 
-impl error::Error for Error {
-    fn description(&self) -> &str {
-        "This method is soft-deprecated. use Display instead"
-    }
-}
+impl error::Error for Error {}
 
 #[cfg(test)]
 mod tests {
