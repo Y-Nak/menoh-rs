@@ -13,7 +13,7 @@ def retrieve_model():
         "https://www.dropbox.com/s/bjfn9kehukpbmcm/VGG16.onnx?dl=1",
         str(model_dir / "VGG16.onnx"))
 
-    print("Downloading vgg16 category list...")
+    print("Downloading VGG16 category list...")
     urllib.request.urlretrieve(
         "https://raw.githubusercontent.com/HoldenCaulfieldRye/caffe/master/data/ilsvrc12/synset_words.txt",
         str(model_dir / "synset_words.txt"))
