@@ -11,7 +11,7 @@ pub enum Dtype {
 }
 
 /// Indicate compatible type with menoh dtype
-pub trait DtypeCompatible: 'static + Clone + Copy {}
+pub trait DtypeCompatible: 'static + Clone + Copy + Default {}
 
 impl DtypeCompatible for f32 {}
 
