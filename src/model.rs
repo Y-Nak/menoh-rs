@@ -170,7 +170,7 @@ impl<'a, 's> Model<'a, 's> {
     /// Get mutable reference to buffer generated inside model.
     ///
     /// The reference lifetime is bounded by this instance.
-    pub fn get_internal_buffer_mut<T>(&self, name: &str) -> Result<&[T], Error>
+    pub fn get_internal_buffer_mut<T>(&self, name: &str) -> Result<&mut [T], Error>
     where
         T: DtypeCompatible,
     {
