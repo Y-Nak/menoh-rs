@@ -28,7 +28,7 @@ pub struct ModelBuilder<'a, 's> {
 ///
 /// An instance of `Model` is built by `ModelBuilder`
 ///
-/// An instance of `Model` can't live longer than attached buffer data if user attached external buffer.
+/// Lifetime of `Model` instance is bounded by attached buffer internal data if user attached external buffer.
 pub struct Model<'a, 's> {
     external_bufs: HashMap<&'s str, RawBuffer<'a>>,
     handle: ffi::menoh_model_handle,
@@ -119,7 +119,7 @@ impl<'a, 's> Model<'a, 's> {
 
     /// Get reference to attached buffer.
     ///
-    /// The reference to the buffer lives longer than this instance.
+    /// The reference to the buffer can live longer than this instance.
     pub fn get_attached_buffer<T>(&self, name: &str) -> Result<&'a [T], Error>
     where
         T: DtypeCompatible,
@@ -132,6 +132,9 @@ impl<'a, 's> Model<'a, 's> {
         Ok(raw_buf.as_slice())
     }
 
+    /// Get reference to attached buffer.
+    ///
+    /// The reference to the buffer can live longer than this instance.
     pub fn get_attached_buffer_mut<T>(&self, name: &str) -> Result<&'a mut [T], Error>
     where
         T: DtypeCompatible,
@@ -146,7 +149,7 @@ impl<'a, 's> Model<'a, 's> {
 
     /// Get reference to buffer generated inside model.
     ///
-    /// The reference is bounded by this instance.
+    /// The reference lifetime is bounded by this instance.
     pub fn get_internal_buffer<T>(&self, name: &str) -> Result<&[T], Error>
     where
         T: DtypeCompatible,
@@ -166,7 +169,7 @@ impl<'a, 's> Model<'a, 's> {
 
     /// Get mutable reference to buffer generated inside model.
     ///
-    /// The reference is bounded by this instance.
+    /// The reference lifetime is bounded by this instance.
     pub fn get_internal_buffer_mut<T>(&self, name: &str) -> Result<&[T], Error>
     where
         T: DtypeCompatible,
