@@ -3,7 +3,7 @@
 //!
 //! # Examples
 //! ```rust,ignore
-//!   extern crate menoh;
+//! extern crate menoh;
 //!
 //! // parse ONNX file
 //! let model_data = menoh::ModelData::new(MODEL_PATH).unwrap();
