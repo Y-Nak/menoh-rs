@@ -1,27 +1,19 @@
 use dtype::DtypeCompatible;
 use error::Error;
 
-pub struct Buffer<T>
+pub struct Buffer<'a, T>
 where
-    T: DtypeCompatible,
+    T: 'a + DtypeCompatible,
 {
-    data: Vec<T>,
+    data: &'a mut [T],
 }
 
-impl<T> Buffer<T>
+impl<'a, T> Buffer<'a, T>
 where
-    T: DtypeCompatible,
+    T: 'a + DtypeCompatible,
 {
-    pub fn new(len: usize) -> Self {
-        Buffer {
-            data: vec![Default::default(); len],
-        }
-    }
-
-    pub fn from_slice(data: &[T]) -> Self {
-        Buffer {
-            data: data.to_vec(),
-        }
+    pub fn new(data: &'a mut [T]) -> Self {
+        Buffer { data }
     }
 
     pub fn update(&mut self, data: &[T]) -> Result<(), Error> {
@@ -34,10 +26,10 @@ where
     }
 
     pub fn as_slice(&self) -> &[T] {
-        &self.data
+        self.data
     }
 
     pub fn as_slice_mut(&mut self) -> &mut [T] {
-        &mut self.data
+        self.data
     }
 }

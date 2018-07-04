@@ -28,7 +28,7 @@ pub struct ModelBuilder<'a, 's> {
 ///
 /// An instance of `Model` is built by `ModelBuilder`
 ///
-/// An instance of `Model` can't live longer than attached buffer if user attached external buffer.
+/// An instance of `Model` can't live longer than attached buffer data if user attached external buffer.
 pub struct Model<'a, 's> {
     external_bufs: HashMap<&'s str, RawBuffer<'a>>,
     handle: ffi::menoh_model_handle,
@@ -64,7 +64,7 @@ impl<'a, 's> ModelBuilder<'a, 's> {
     pub fn attach_external_buffer<T>(
         &mut self,
         name: &'s str,
-        buffer: &'a Buffer<T>,
+        buffer: &Buffer<'a, T>,
     ) -> Result<(), Error>
     where
         T: DtypeCompatible,
@@ -275,7 +275,7 @@ impl<'a, 's> Model<'a, 's> {
 }
 
 impl<'a> RawBuffer<'a> {
-    fn from<T: DtypeCompatible>(buffer: &'a Buffer<T>) -> RawBuffer<'a> {
+    fn from<T: DtypeCompatible>(buffer: &Buffer<'a, T>) -> Self {
         RawBuffer {
             data: buffer.as_slice().as_ptr() as _,
             len: buffer.as_slice().len(),
