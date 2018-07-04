@@ -42,11 +42,11 @@ struct RawBuffer<'a> {
 }
 
 impl<'a, 's> ModelBuilder<'a, 's> {
-    pub fn new(variable_profile_table: &VariableProfileTable) -> Result<Self, Error> {
+    pub fn new(vpt: &VariableProfileTable) -> Result<Self, Error> {
         let mut handle: ffi::menoh_model_builder_handle = unsafe { mem::uninitialized() };
         cvt_r(|| unsafe {
             ffi::menoh_make_model_builder(
-                variable_profile_table.get_handle(),
+                vpt.get_handle(),
                 &mut handle as *mut ffi::menoh_model_builder_handle,
             )
         })?;
@@ -56,12 +56,67 @@ impl<'a, 's> ModelBuilder<'a, 's> {
         })
     }
 
-    // TODO: Validate external buffer size
-    /// Attach external buffer to the model, which generated from this instance.
+    /// Attach external buffer to the [`Model`][Model] generated from this instance.
+    ///
+    /// If user doesn't attach external buffer, then internal buffer is automatically generaged
+    /// inside [`Model`][Model].
+    ///
+    /// [`Model`][Model] lifetime is bounded by buffer internal data.
+    ///
+    /// If user can ensure buffer dtype and size is valid, and [`VariableProfileTable`][VPT] is out of
+    /// scope, there is an unsafe version of this method,
+    /// [`attach_external_buffer_unchecked`][attach_external_buffer_unchecked], which doesn't
+    /// require [`VariableProfileTable`][VPT] and skip validation against passed buffer.
+    ///
+    /// [VPT]: struct.VariableProfileTable.html
+    /// [Model]: struct.Model.html
+    /// [attach_external_buffer_unchecked]:
+    /// struct.ModelBuilder.html#method.attach_external_buffer_unchecked
+    pub fn attach_external_buffer<T>(
+        &mut self,
+        name: &'s str,
+        buffer: &Buffer<'a, T>,
+        vpt: &VariableProfileTable,
+    ) -> Result<(), Error>
+    where
+        T: DtypeCompatible,
+    {
+        let variable_profile = vpt.get_variable_profile(name)?;
+
+        if buffer.as_slice().len() < variable_profile.dims.iter().fold(1, |acc, x| acc * x) as usize
+        {
+            return Err(Error::InvalidBufferSize);
+        }
+
+        if !variable_profile.dtype.is_compatible::<T>() {
+            return Err(Error::InvalidDtype);
+        }
+
+        unsafe { self.attach_external_buffer_unchecked(name, buffer) }
+    }
+
+    /// Attach external buffer to the [`Model`][Model] generated from this instance.
     ///
     /// If user doesn't attach external buffer, then internal buffer is automatically generaged
     /// inside model.
-    pub fn attach_external_buffer<T>(
+    ///
+    /// [`Model`][Model] lifetime is bounded by buffer internal data.
+    ///
+    /// See the safe version, [`attach_external_buffer`][attach_external_buffer], for more
+    /// infomation.
+    ///
+    /// # Safety
+    ///
+    /// This function is unsafe because it does not check that passed buffer is valid dtype and
+    /// have enough size.
+    ///
+    /// User must ensure [`Dtype`][Dtype] and size of internal buffer size on oneself.
+    ///
+    /// [attach_external_buffer]: struct.ModelBuilder.html#method.attach_external_buffer
+    /// [Model]: struct.Model.html
+    /// [Dtype]: enum.Dtype.html
+    ///
+    pub unsafe fn attach_external_buffer_unchecked<T>(
         &mut self,
         name: &'s str,
         buffer: &Buffer<'a, T>,
@@ -71,7 +126,7 @@ impl<'a, 's> ModelBuilder<'a, 's> {
     {
         let name_c_expr = CString::new(name).map_err(|_| Error::VariableNotFound)?;
         let raw_buffer = RawBuffer::from(buffer);
-        cvt_r(|| unsafe {
+        cvt_r(|| {
             ffi::menoh_model_builder_attach_external_buffer(
                 self.handle,
                 name_c_expr.as_ptr(),
