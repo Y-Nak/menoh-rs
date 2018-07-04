@@ -1,8 +1,8 @@
 //! This module contains ModelData
 //!
 //!
+use std;
 use std::ffi::CString;
-use std::mem;
 use std::path::Path;
 
 use error::{cvt_r, Error};
@@ -15,9 +15,12 @@ pub struct ModelData {
 
 impl ModelData {
     /// Create ModelData from given ONNX file.
-    pub fn new(onnx_path: &Path) -> Result<Self, Error> {
-        let mut handle: menoh_model_data_handle = unsafe { mem::uninitialized() };
-        let p = CString::new(onnx_path.to_str().ok_or(Error::InvalidFileName)?)
+    pub fn new<P>(onnx_path: &P) -> Result<Self, Error>
+    where
+        P: AsRef<Path>,
+    {
+        let mut handle: menoh_model_data_handle = std::ptr::null_mut();
+        let p = CString::new(onnx_path.as_ref().to_str().ok_or(Error::InvalidFileName)?)
             .map_err(|_| Error::InvalidFileName)?;
         cvt_r(|| unsafe {
             ffi::menoh_make_model_data_from_onnx(
