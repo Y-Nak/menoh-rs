@@ -16,7 +16,7 @@ pub struct ModelData {
 
 impl ModelData {
     /// Create ModelData from given ONNX file.
-    pub fn new<P>(onnx_path: &P) -> Result<Self, Error>
+    pub fn new<P>(onnx_path: P) -> Result<Self, Error>
     where
         P: AsRef<Path>,
     {
