@@ -12,8 +12,9 @@ use libc::c_void;
 use dtype::{Dtype, DtypeCompatible};
 use error::{cvt_r, Error};
 use ffi;
-use model_data::ModelData;
-use variable_profile::VariableProfileTable;
+use Buffer;
+use ModelData;
+use VariableProfileTable;
 
 /// Builder of model.
 ///
@@ -58,12 +59,12 @@ impl<'a, 's> ModelBuilder<'a, 's> {
     // TODO: Validate external buffer size
     /// Attach external buffer to the model, which generated from this instance.
     ///
-    /// If user doesn't attach external buffer, than internal buffer is automatically generaged
+    /// If user doesn't attach external buffer, then internal buffer is automatically generaged
     /// inside model.
     pub fn attach_external_buffer<T>(
         &mut self,
         name: &'s str,
-        buffer: &'a mut [T],
+        buffer: &'a Buffer<T>,
     ) -> Result<(), Error>
     where
         T: DtypeCompatible,
@@ -131,9 +132,6 @@ impl<'a, 's> Model<'a, 's> {
         Ok(raw_buf.as_slice())
     }
 
-    /// Get mutable reference to attached buffer.
-    ///
-    /// The reference to the buffer lives longer than this instance.
     pub fn get_attached_buffer_mut<T>(&self, name: &str) -> Result<&'a mut [T], Error>
     where
         T: DtypeCompatible,
@@ -153,6 +151,10 @@ impl<'a, 's> Model<'a, 's> {
     where
         T: DtypeCompatible,
     {
+        if self.external_bufs.contains_key(name) {
+            return Err(Error::NotInternalBuffer);
+        }
+
         let name_c_expr = CString::new(name).map_err(|_| Error::VariableNotFound)?;
 
         self.validate_dtype::<T>(&name_c_expr)?;
@@ -169,6 +171,10 @@ impl<'a, 's> Model<'a, 's> {
     where
         T: DtypeCompatible,
     {
+        if self.external_bufs.contains_key(name) {
+            return Err(Error::NotInternalBuffer);
+        }
+
         let name_c_expr = CString::new(name).map_err(|_| Error::VariableNotFound)?;
 
         self.validate_dtype::<T>(&name_c_expr)?;
@@ -269,10 +275,10 @@ impl<'a, 's> Model<'a, 's> {
 }
 
 impl<'a> RawBuffer<'a> {
-    fn from<T: DtypeCompatible>(external_buffer: &'a mut [T]) -> RawBuffer<'a> {
+    fn from<T: DtypeCompatible>(buffer: &'a Buffer<T>) -> RawBuffer<'a> {
         RawBuffer {
-            data: external_buffer.as_mut_ptr() as _,
-            len: external_buffer.len(),
+            data: buffer.as_slice().as_ptr() as _,
+            len: buffer.as_slice().len(),
             _phantom: PhantomData,
         }
     }
