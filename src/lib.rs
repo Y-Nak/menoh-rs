@@ -65,4 +65,4 @@ pub use buffer::Buffer;
 pub use dtype::{Dtype, DtypeCompatible};
 pub use model::{Model, ModelBuilder};
 pub use model_data::ModelData;
-pub use variable_profile::{VariableProfileTable, VariableProfileTableBuilder};
+pub use variable_profile::{VariableProfile, VariableProfileTable, VariableProfileTableBuilder};
