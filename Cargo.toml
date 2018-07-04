@@ -5,3 +5,6 @@ authors = ["Y-Nak <nak.yoshitomo@gmail.com>"]
 
 [dependencies]
 libc = "0.2"
+
+[dev-dependencies]
+image = "*"
