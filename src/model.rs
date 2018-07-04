@@ -30,6 +30,10 @@ struct RawBuffer<'a> {
     _phantom: PhantomData<&'a c_void>,
 }
 
+/// Builder of model.
+///
+/// If user attach external buffer, Model builder and Model can't live longer than the attached
+/// buffer.
 impl<'a, 's> ModelBuilder<'a, 's> {
     pub fn new(variable_profile_table: &VariableProfileTable) -> Result<Self, Error> {
         let mut handle: ffi::menoh_model_builder_handle = unsafe { mem::uninitialized() };
@@ -46,6 +50,10 @@ impl<'a, 's> ModelBuilder<'a, 's> {
     }
 
     // TODO: Validate external buffer size
+    /// Attach external buffer to the model, which generated from this instance.
+    ///
+    /// If user doesn't attach external buffer, then internal buffer is automatically generaged
+    /// inside model.
     pub fn attach_external_buffer<T>(
         &mut self,
         name: &'s str,
@@ -67,6 +75,9 @@ impl<'a, 's> ModelBuilder<'a, 's> {
         Ok(())
     }
 
+    /// Build model.
+    ///
+    /// After calling `build_model`, User can drop the instance of `ModelBuilder` in arbitary timing.
     pub fn build_model(
         &self,
         model_data: &ModelData,
@@ -93,11 +104,15 @@ impl<'a, 's> ModelBuilder<'a, 's> {
 }
 
 impl<'a, 's> Model<'a, 's> {
+    /// Run model inference
     pub fn run(&mut self) -> Result<(), Error> {
         cvt_r(|| unsafe { ffi::menoh_model_run(self.handle) })?;
         Ok(())
     }
 
+    /// Get reference to attached buffer.
+    ///
+    /// The reference to the buffer lives longer then this instance.
     pub fn get_attached_buffer<T>(&self, name: &str) -> Result<&'a [T], Error>
     where
         T: DtypeCompatible,
@@ -110,6 +125,9 @@ impl<'a, 's> Model<'a, 's> {
         Ok(raw_buf.as_slice())
     }
 
+    /// Get mutable reference to attached buffer.
+    ///
+    /// The reference to the buffer lives longer then this instance.
     pub fn get_attached_buffer_mut<T>(&self, name: &str) -> Result<&'a mut [T], Error>
     where
         T: DtypeCompatible,
@@ -122,6 +140,9 @@ impl<'a, 's> Model<'a, 's> {
         Ok(raw_buf.as_mut_slice())
     }
 
+    /// Get reference to buffer generated inside model.
+    ///
+    /// The reference is bound by this instance.
     pub fn get_internal_buffer<T>(&self, name: &str) -> Result<&[T], Error>
     where
         T: DtypeCompatible,
@@ -135,6 +156,9 @@ impl<'a, 's> Model<'a, 's> {
         unsafe { Ok(slice::from_raw_parts(ptr as _, len)) }
     }
 
+    /// Get mutable reference to buffer generated inside model.
+    ///
+    /// The reference is bound by this instance.
     pub fn get_internal_buffer_mut<T>(&self, name: &str) -> Result<&[T], Error>
     where
         T: DtypeCompatible,
@@ -148,19 +172,25 @@ impl<'a, 's> Model<'a, 's> {
         unsafe { Ok(slice::from_raw_parts_mut(ptr as _, len)) }
     }
 
-    pub fn get_variable_dtype(&self, name: &CString) -> Result<Dtype, Error> {
-        let mut dtype = ffi::menoh_dtype::default();
-        cvt_r(|| unsafe {
-            ffi::menoh_model_get_variable_dtype(
-                self.handle,
-                name.as_ptr(),
-                &mut dtype as *mut ffi::menoh_dtype,
-            )
-        })?;
-        Ok(Dtype::from(dtype))
+    /// Get dtype by name
+    pub fn get_variable_dtype(&self, name: &str) -> Result<Dtype, Error> {
+        let name = CString::new(name).map_err(|_| Error::VariableNotFound)?;
+        self.get_variable_dtype_impl(&name)
     }
 
-    pub fn get_variable_len(&self, name: &CString) -> Result<usize, Error> {
+    /// Get dims by name
+    pub fn get_variable_dims(&self, name: &str) -> Result<Vec<i32>, Error> {
+        let name = CString::new(name).map_err(|_| Error::VariableNotFound)?;
+        let dims_size = self.get_variable_dims_size(&name)?;
+
+        let mut dims = Vec::new();
+        for i in 0..dims_size {
+            dims.push(self.get_variable_dims_at(&name, i)?)
+        }
+        Ok(dims)
+    }
+
+    fn get_variable_len(&self, name: &CString) -> Result<usize, Error> {
         let dims_size = self.get_variable_dims_size(name)?;
 
         let mut dims = Vec::new();
@@ -170,7 +200,7 @@ impl<'a, 's> Model<'a, 's> {
         Ok(dims.iter().fold(1, |acc, x| acc * x) as usize)
     }
 
-    pub fn get_variable_dims_size(&self, name: &CString) -> Result<i32, Error> {
+    fn get_variable_dims_size(&self, name: &CString) -> Result<i32, Error> {
         let mut dims_size = libc::int32_t::default();
         cvt_r(|| unsafe {
             ffi::menoh_model_get_variable_dims_size(
@@ -182,7 +212,7 @@ impl<'a, 's> Model<'a, 's> {
         Ok(dims_size)
     }
 
-    pub fn get_variable_dims_at(&self, name: &CString, index: i32) -> Result<i32, Error> {
+    fn get_variable_dims_at(&self, name: &CString, index: i32) -> Result<i32, Error> {
         let mut dst_dim = libc::int32_t::default();
         cvt_r(|| unsafe {
             ffi::menoh_model_get_variable_dims_at(
@@ -211,12 +241,24 @@ impl<'a, 's> Model<'a, 's> {
     where
         T: DtypeCompatible,
     {
-        let dtype = self.get_variable_dtype(&name)?;
+        let dtype = self.get_variable_dtype_impl(&name)?;
         if dtype.is_compatible::<T>() {
             Ok(())
         } else {
             Err(Error::InvalidDtype)
         }
+    }
+
+    fn get_variable_dtype_impl(&self, name: &CString) -> Result<Dtype, Error> {
+        let mut dtype = ffi::menoh_dtype::default();
+        cvt_r(|| unsafe {
+            ffi::menoh_model_get_variable_dtype(
+                self.handle,
+                name.as_ptr(),
+                &mut dtype as *mut ffi::menoh_dtype,
+            )
+        })?;
+        Ok(Dtype::from(dtype))
     }
 }
 
