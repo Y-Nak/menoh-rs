@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["VariableProfile",""],["VariableProfileTable","Variable Profile table."],["VariableProfileTableBuilder","Builder of Variable Profile Table."]]});

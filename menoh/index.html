@@ -1,30 +1,53 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `menoh` crate."><meta name="keywords" content="rust, rustlang, rust-lang, menoh"><title>menoh - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><p class='location'>Crate menoh</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#reexports">Re-exports</a></li><li><a href="#modules">Modules</a></li></ul></div><p class='location'></p><script>window.sidebarCurrent = {name: 'menoh', ty: 'mod', relpath: '../'};</script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='in-band'>Crate <a class="mod" href=''>menoh</a></span><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/menoh/lib.rs.html#1-16' title='goto source code'>[src]</a></span></h1><h2 id='reexports' class='section-header'><a href="#reexports">Re-exports</a></h2>
-<table><tr><td><code>pub use buffer::<a class="struct" href="../menoh/buffer/struct.Buffer.html" title="struct menoh::buffer::Buffer">Buffer</a>;</code></td></tr><tr><td><code>pub use dtype::<a class="enum" href="../menoh/dtype/enum.Dtype.html" title="enum menoh::dtype::Dtype">Dtype</a>;</code></td></tr><tr><td><code>pub use model::<a class="struct" href="../menoh/model/struct.Model.html" title="struct menoh::model::Model">Model</a>;</code></td></tr><tr><td><code>pub use model::<a class="struct" href="../menoh/model/struct.ModelBuilder.html" title="struct menoh::model::ModelBuilder">ModelBuilder</a>;</code></td></tr><tr><td><code>pub use model_data::<a class="struct" href="../menoh/model_data/struct.ModelData.html" title="struct menoh::model_data::ModelData">ModelData</a>;</code></td></tr><tr><td><code>pub use variable_profile::<a class="struct" href="../menoh/variable_profile/struct.VariableProfileTable.html" title="struct menoh::variable_profile::VariableProfileTable">VariableProfileTable</a>;</code></td></tr><tr><td><code>pub use variable_profile::<a class="struct" href="../menoh/variable_profile/struct.VariableProfileTableBuilder.html" title="struct menoh::variable_profile::VariableProfileTableBuilder">VariableProfileTableBuilder</a>;</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `menoh` crate."><meta name="keywords" content="rust, rustlang, rust-lang, menoh"><title>menoh - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><p class='location'>Crate menoh</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li></ul></div><p class='location'></p><script>window.sidebarCurrent = {name: 'menoh', ty: 'mod', relpath: '../'};</script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='in-band'>Crate <a class="mod" href=''>menoh</a></span><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/menoh/lib.rs.html#1-68' title='goto source code'>[src]</a></span></h1><div class='docblock'><h1 id="menoh-rs" class="section-header"><a href="#menoh-rs">Menoh-rs</a></h1>
+<p><strong>A simple wrapper of <a href="https://github.com/pfnet-research/menoh">Menoh</a></strong></p>
+<h1 id="examples" class="section-header"><a href="#examples">Examples</a></h1>
+<pre><code class="language-no_compile">   extern crate menoh;
+
+   // parse ONNX file
+   let model_data = menoh::ModelData::new(MODEL_PATH).unwrap();
+
+   let mut vpt_builder = menoh::VariableProfileTableBuilder::new().unwrap();
+
+   let input_dims = vec![
+       INPUT_BATCH_SIZE,
+       INPUT_CHANNEL_NUM,
+       INPUT_HEIGHT,
+       INPUT_WIDTH,
+   ];
+
+   // register profile
+   vpt_builder
+       .add_input_profile(CONV1_1_IN_NAME, menoh::Dtype::Float, &amp;input_dims)
+       .unwrap();
+
+   vpt_builder
+       .add_output_profile(SOFTMAX_OUT_NAME, menoh::Dtype::Float)
+       .unwrap();
+
+   let vpt = vpt_builder
+       .build_variable_profile_table(&amp;model_data)
+       .unwrap();
+
+   // Attach buffer to input variable.
+   // This is not necessary operation.
+   // Internal buffer is automatically generated by model.
+   let mut hen_im = to_input_vec(image::open(HEN_IMAGE_PATH).unwrap());
+   let mut buffer = menoh::Buffer::new(&amp;mut hen_im);
+
+   let mut model_builder = mehoh::ModelBuilder::new(&amp;vpt).unwrap();
+   model_builder
+       .attach_external_buffer(CONV1_1_IN_NAME, &amp;buffer)
+       .unwrap();
+
+   let mut model = model_builder
+       .build_model(&amp;model_data, &quot;mkldnn&quot;, &quot;&quot;)
+       .unwrap();
+
+   // run model inference
+   model.run().unwrap();
+</code></pre>
+</div><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
-                       <tr class=' module-item'>
-                           <td><a class="mod" href="buffer/index.html"
-                                  title='mod menoh::buffer'>buffer</a></td>
-                           <td class='docblock-short'>
-                                <p>This module contains buffer attached to model</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="mod" href="dtype/index.html"
-                                  title='mod menoh::dtype'>dtype</a></td>
-                           <td class='docblock-short'>
-                                <p>This module contains dtype related.</p>
-
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="mod" href="error/index.html"
-                                  title='mod menoh::error'>error</a></td>
-                           <td class='docblock-short'>
-                                <p>This module defines Error and Result type of Menoh</p>
-
-                           </td>
-                       </tr>
                        <tr class=' module-item'>
                            <td><a class="mod" href="ffi/index.html"
                                   title='mod menoh::ffi'>ffi</a></td>
@@ -32,28 +55,62 @@
                                 <p>This module provides &quot;raw&quot; declarations and linkage for <code>Menoh</code> C API.</p>
 
                            </td>
-                       </tr>
+                       </tr></table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
                        <tr class=' module-item'>
-                           <td><a class="mod" href="model/index.html"
-                                  title='mod menoh::model'>model</a></td>
+                           <td><a class="struct" href="struct.Buffer.html"
+                                  title='struct menoh::Buffer'>Buffer</a></td>
                            <td class='docblock-short'>
-                                <p>This module contains monoh model related.</p>
+                                <p>Buffer that attached to model.</p>
 
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class="mod" href="model_data/index.html"
-                                  title='mod menoh::model_data'>model_data</a></td>
+                           <td><a class="struct" href="struct.Model.html"
+                                  title='struct menoh::Model'>Model</a></td>
                            <td class='docblock-short'>
-                                <p>This module contains ModelData</p>
+                                <p>Model defined by ONNX.</p>
 
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class="mod" href="variable_profile/index.html"
-                                  title='mod menoh::variable_profile'>variable_profile</a></td>
+                           <td><a class="struct" href="struct.ModelBuilder.html"
+                                  title='struct menoh::ModelBuilder'>ModelBuilder</a></td>
                            <td class='docblock-short'>
-                                <p>This module contains variable profile of ONNX model related.</p>
+                                <p>Builder of model.</p>
+
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.ModelData.html"
+                                  title='struct menoh::ModelData'>ModelData</a></td>
+                           <td class='docblock-short'>
+                                <p>Represent model data defined by ONNX file.</p>
+
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.VariableProfileTable.html"
+                                  title='struct menoh::VariableProfileTable'>VariableProfileTable</a></td>
+                           <td class='docblock-short'>
+                                <p>Variable Profile table.</p>
+
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.VariableProfileTableBuilder.html"
+                                  title='struct menoh::VariableProfileTableBuilder'>VariableProfileTableBuilder</a></td>
+                           <td class='docblock-short'>
+                                <p>Builder of Variable Profile Table.</p>
+
+                           </td>
+                       </tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.Dtype.html"
+                                  title='enum menoh::Dtype'>Dtype</a></td>
+                           <td class='docblock-short'>
+                                <p>Dtype that accepted by menoh model.</p>
 
                            </td>
                        </tr></table></section><section id="search" class="content hidden"></section><section class="footer"></section><aside id="help" class="hidden"><div><h1 class="hidden">Help</h1><div class="shortcuts"><h2>Keyboard Shortcuts</h2><dl><dt><kbd>?</kbd></dt><dd>Show this help dialog</dd><dt><kbd>S</kbd></dt><dd>Focus the search field</dd><dt><kbd>↑</kbd></dt><dd>Move up in search results</dd><dt><kbd>↓</kbd></dt><dd>Move down in search results</dd><dt><kbd>↹</kbd></dt><dd>Switch tab</dd><dt><kbd>&#9166;</kbd></dt><dd>Go to active search result</dd><dt><kbd>+</kbd></dt><dd>Expand all sections</dd><dt><kbd>-</kbd></dt><dd>Collapse all sections</dd></dl></div><div class="infos"><h2>Search Tricks</h2><p>Prefix searches with a type followed by a colon (e.g. <code>fn:</code>) to restrict the search to a given type.</p><p>Accepted types are: <code>fn</code>, <code>mod</code>, <code>struct</code>, <code>enum</code>, <code>trait</code>, <code>type</code>, <code>macro</code>, and <code>const</code>.</p><p>Search functions by type signature (e.g. <code>vec -> usize</code> or <code>* -> vec</code>)</p><p>Search multiple things at once by splitting your query with comma (e.g. <code>str,u8</code> or <code>String,struct:Vec,test</code>)</p></div></div></aside><script>window.rootPath = "../";window.currentCrate = "menoh";</script><script src="../aliases.js"></script><script src="../main.js"></script><script defer src="../search-index.js"></script></body></html>

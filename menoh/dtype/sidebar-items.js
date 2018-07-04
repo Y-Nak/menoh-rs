@@ -1,1 +1,0 @@
-initSidebarItems({"enum":[["Dtype","Dtype that accepted by menoh model."]],"trait":[["DtypeCompatible","Indicate compatible type with menoh dtype"]]});

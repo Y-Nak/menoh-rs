@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["Buffer","Buffer that attached to model."]]});
