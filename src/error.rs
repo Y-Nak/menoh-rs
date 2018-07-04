@@ -26,6 +26,8 @@ pub enum Error {
     FailedToConfigureOperator,
     BackendError,
     SameNamedVariableAlreadyExist,
+    InvalidBufferSize,
+    NotInternalBuffer,
 }
 
 fn get_last_error_message<'a>() -> &'a str {
