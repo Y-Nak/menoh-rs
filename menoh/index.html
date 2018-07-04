@@ -1,51 +1,51 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `menoh` crate."><meta name="keywords" content="rust, rustlang, rust-lang, menoh"><title>menoh - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../dark.css"><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script src="../storage.js"></script></head><body class="rustdoc mod"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><p class='location'>Crate menoh</p><div class="sidebar-elems"><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li></ul></div><p class='location'></p><script>window.sidebarCurrent = {name: 'menoh', ty: 'mod', relpath: '../'};</script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../theme.js"></script><nav class="sub"><form class="search-form js-only"><div class="search-container"><input class="search-input" name="search" autocomplete="off" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><a id="settings-menu" href="../settings.html"><img src="../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><h1 class='fqn'><span class='in-band'>Crate <a class="mod" href=''>menoh</a></span><span class='out-of-band'><span id='render-detail'><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class='inner'>&#x2212;</span>]</a></span><a class='srclink' href='../src/menoh/lib.rs.html#1-68' title='goto source code'>[src]</a></span></h1><div class='docblock'><h1 id="menoh-rs" class="section-header"><a href="#menoh-rs">Menoh-rs</a></h1>
 <p><strong>A simple wrapper of <a href="https://github.com/pfnet-research/menoh">Menoh</a></strong></p>
 <h1 id="examples" class="section-header"><a href="#examples">Examples</a></h1>
-<pre><code class="language-no_compile">   extern crate menoh;
+<div class='information'><div class='tooltip ignore'>ⓘ<span class='tooltiptext'>This example is not tested</span></div></div><pre class="rust rust-example-rendered ignore">
+  <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">menoh</span>;
 
-   // parse ONNX file
-   let model_data = menoh::ModelData::new(MODEL_PATH).unwrap();
+<span class="comment">// parse ONNX file</span>
+<span class="kw">let</span> <span class="ident">model_data</span> <span class="op">=</span> <span class="ident">menoh</span>::<span class="ident">ModelData</span>::<span class="ident">new</span>(<span class="ident">MODEL_PATH</span>).<span class="ident">unwrap</span>();
 
-   let mut vpt_builder = menoh::VariableProfileTableBuilder::new().unwrap();
+<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vpt_builder</span> <span class="op">=</span> <span class="ident">menoh</span>::<span class="ident">VariableProfileTableBuilder</span>::<span class="ident">new</span>().<span class="ident">unwrap</span>();
 
-   let input_dims = vec![
-       INPUT_BATCH_SIZE,
-       INPUT_CHANNEL_NUM,
-       INPUT_HEIGHT,
-       INPUT_WIDTH,
-   ];
+<span class="kw">let</span> <span class="ident">input_dims</span> <span class="op">=</span> <span class="macro">vec</span><span class="macro">!</span>[
+    <span class="ident">INPUT_BATCH_SIZE</span>,
+    <span class="ident">INPUT_CHANNEL_NUM</span>,
+    <span class="ident">INPUT_HEIGHT</span>,
+    <span class="ident">INPUT_WIDTH</span>,
+];
 
-   // register profile
-   vpt_builder
-       .add_input_profile(CONV1_1_IN_NAME, menoh::Dtype::Float, &amp;input_dims)
-       .unwrap();
+<span class="comment">// register profile</span>
+<span class="ident">vpt_builder</span>
+    .<span class="ident">add_input_profile</span>(<span class="ident">CONV1_1_IN_NAME</span>, <span class="ident">menoh</span>::<span class="ident">Dtype</span>::<span class="ident">Float</span>, <span class="kw-2">&amp;</span><span class="ident">input_dims</span>)
+    .<span class="ident">unwrap</span>();
 
-   vpt_builder
-       .add_output_profile(SOFTMAX_OUT_NAME, menoh::Dtype::Float)
-       .unwrap();
+<span class="ident">vpt_builder</span>
+    .<span class="ident">add_output_profile</span>(<span class="ident">SOFTMAX_OUT_NAME</span>, <span class="ident">menoh</span>::<span class="ident">Dtype</span>::<span class="ident">Float</span>)
+    .<span class="ident">unwrap</span>();
 
-   let vpt = vpt_builder
-       .build_variable_profile_table(&amp;model_data)
-       .unwrap();
+<span class="kw">let</span> <span class="ident">vpt</span> <span class="op">=</span> <span class="ident">vpt_builder</span>
+    .<span class="ident">build_variable_profile_table</span>(<span class="kw-2">&amp;</span><span class="ident">model_data</span>)
+    .<span class="ident">unwrap</span>();
 
-   // Attach buffer to input variable.
-   // This is not necessary operation.
-   // Internal buffer is automatically generated by model.
-   let mut hen_im = to_input_vec(image::open(HEN_IMAGE_PATH).unwrap());
-   let mut buffer = menoh::Buffer::new(&amp;mut hen_im);
+<span class="comment">// Attach buffer to input variable.</span>
+<span class="comment">// This is not necessary operation.</span>
+<span class="comment">// Internal buffer is automatically generated by model.</span>
+<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">hen_im</span> <span class="op">=</span> <span class="ident">to_input_vec</span>(<span class="ident">image</span>::<span class="ident">open</span>(<span class="ident">HEN_IMAGE_PATH</span>).<span class="ident">unwrap</span>());
+<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">menoh</span>::<span class="ident">Buffer</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">hen_im</span>);
 
-   let mut model_builder = mehoh::ModelBuilder::new(&amp;vpt).unwrap();
-   model_builder
-       .attach_external_buffer(CONV1_1_IN_NAME, &amp;buffer)
-       .unwrap();
+<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">model_builder</span> <span class="op">=</span> <span class="ident">mehoh</span>::<span class="ident">ModelBuilder</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">vpt</span>).<span class="ident">unwrap</span>();
+<span class="ident">model_builder</span>
+    .<span class="ident">attach_external_buffer</span>(<span class="ident">CONV1_1_IN_NAME</span>, <span class="kw-2">&amp;</span><span class="ident">buffer</span>)
+    .<span class="ident">unwrap</span>();
 
-   let mut model = model_builder
-       .build_model(&amp;model_data, &quot;mkldnn&quot;, &quot;&quot;)
-       .unwrap();
+<span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">model</span> <span class="op">=</span> <span class="ident">model_builder</span>
+    .<span class="ident">build_model</span>(<span class="kw-2">&amp;</span><span class="ident">model_data</span>, <span class="string">&quot;mkldnn&quot;</span>, <span class="string">&quot;&quot;</span>)
+    .<span class="ident">unwrap</span>();
 
-   // run model inference
-   model.run().unwrap();
-</code></pre>
+<span class="comment">// run model inference</span>
+<span class="ident">model</span>.<span class="ident">run</span>().<span class="ident">unwrap</span>();</pre>
 </div><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
                        <tr class=' module-item'>
