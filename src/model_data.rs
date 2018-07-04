@@ -9,6 +9,7 @@ use error::{cvt_r, Error};
 use ffi;
 use ffi::menoh_model_data_handle;
 
+/// Represent model data defined by ONNX file.
 pub struct ModelData {
     handle: menoh_model_data_handle,
 }

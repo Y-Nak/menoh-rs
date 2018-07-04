@@ -1,12 +1,16 @@
+//! This module contains dtype related.
+//!
 use std;
 
 use ffi;
 
+/// Dtype that accepted by menoh model.
 #[derive(Clone, Copy)]
 pub enum Dtype {
     Float,
 }
 
+/// Indicate compatible type with menoh dtype
 pub trait DtypeCompatible: 'static + Clone + Copy {}
 
 impl DtypeCompatible for f32 {}

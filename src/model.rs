@@ -1,3 +1,5 @@
+//! This module contains monoh model related.
+
 use std;
 use std::collections::HashMap;
 use std::ffi::CString;
@@ -13,11 +15,19 @@ use ffi;
 use model_data::ModelData;
 use variable_profile::VariableProfileTable;
 
+/// Builder of model.
+///
+/// Mainly used for buffer control.
 pub struct ModelBuilder<'a, 's> {
     handle: ffi::menoh_model_builder_handle,
     external_bufs: HashMap<&'s str, RawBuffer<'a>>,
 }
 
+/// Model defined by ONNX.
+///
+/// An instance of `Model` is built by `ModelBuilder`
+///
+/// An instance of `Model` can't live longer than attached buffer if user attached external buffer.
 pub struct Model<'a, 's> {
     external_bufs: HashMap<&'s str, RawBuffer<'a>>,
     handle: ffi::menoh_model_handle,
@@ -30,10 +40,6 @@ struct RawBuffer<'a> {
     _phantom: PhantomData<&'a c_void>,
 }
 
-/// Builder of model.
-///
-/// If user attach external buffer, Model builder and Model can't live longer than the attached
-/// buffer.
 impl<'a, 's> ModelBuilder<'a, 's> {
     pub fn new(variable_profile_table: &VariableProfileTable) -> Result<Self, Error> {
         let mut handle: ffi::menoh_model_builder_handle = unsafe { mem::uninitialized() };
@@ -52,7 +58,7 @@ impl<'a, 's> ModelBuilder<'a, 's> {
     // TODO: Validate external buffer size
     /// Attach external buffer to the model, which generated from this instance.
     ///
-    /// If user doesn't attach external buffer, then internal buffer is automatically generaged
+    /// If user doesn't attach external buffer, than internal buffer is automatically generaged
     /// inside model.
     pub fn attach_external_buffer<T>(
         &mut self,
@@ -112,7 +118,7 @@ impl<'a, 's> Model<'a, 's> {
 
     /// Get reference to attached buffer.
     ///
-    /// The reference to the buffer lives longer then this instance.
+    /// The reference to the buffer lives longer than this instance.
     pub fn get_attached_buffer<T>(&self, name: &str) -> Result<&'a [T], Error>
     where
         T: DtypeCompatible,
@@ -127,7 +133,7 @@ impl<'a, 's> Model<'a, 's> {
 
     /// Get mutable reference to attached buffer.
     ///
-    /// The reference to the buffer lives longer then this instance.
+    /// The reference to the buffer lives longer than this instance.
     pub fn get_attached_buffer_mut<T>(&self, name: &str) -> Result<&'a mut [T], Error>
     where
         T: DtypeCompatible,
@@ -142,7 +148,7 @@ impl<'a, 's> Model<'a, 's> {
 
     /// Get reference to buffer generated inside model.
     ///
-    /// The reference is bound by this instance.
+    /// The reference is bounded by this instance.
     pub fn get_internal_buffer<T>(&self, name: &str) -> Result<&[T], Error>
     where
         T: DtypeCompatible,
@@ -158,7 +164,7 @@ impl<'a, 's> Model<'a, 's> {
 
     /// Get mutable reference to buffer generated inside model.
     ///
-    /// The reference is bound by this instance.
+    /// The reference is bounded by this instance.
     pub fn get_internal_buffer_mut<T>(&self, name: &str) -> Result<&[T], Error>
     where
         T: DtypeCompatible,

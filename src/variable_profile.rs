@@ -1,6 +1,5 @@
 //! This module contains variable profile of ONNX model related.
 //!
-//!
 use std;
 use std::ffi::CString;
 use std::mem;
@@ -25,6 +24,7 @@ pub struct VariableProfileTable {
     handle: ffi::menoh_variable_profile_table_handle,
 }
 
+/// Builder of Variable Profile Table.
 pub struct VariableProfileTableBuilder {
     handle: ffi::menoh_variable_profile_table_builder_handle,
 }
