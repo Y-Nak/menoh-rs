@@ -1,0 +1,10 @@
+(function() {var implementors = {};
+implementors["menoh"] = [{text:"impl&lt;'a, 's&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html\" title=\"trait core::ops::drop::Drop\">Drop</a> for <a class=\"struct\" href=\"menoh/model/struct.ModelBuilder.html\" title=\"struct menoh::model::ModelBuilder\">ModelBuilder</a>&lt;'a, 's&gt;",synthetic:false,types:["menoh::model::ModelBuilder"]},{text:"impl&lt;'a, 's&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html\" title=\"trait core::ops::drop::Drop\">Drop</a> for <a class=\"struct\" href=\"menoh/model/struct.Model.html\" title=\"struct menoh::model::Model\">Model</a>&lt;'a, 's&gt;",synthetic:false,types:["menoh::model::Model"]},{text:"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html\" title=\"trait core::ops::drop::Drop\">Drop</a> for <a class=\"struct\" href=\"menoh/model_data/struct.ModelData.html\" title=\"struct menoh::model_data::ModelData\">ModelData</a>",synthetic:false,types:["menoh::model_data::ModelData"]},{text:"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html\" title=\"trait core::ops::drop::Drop\">Drop</a> for <a class=\"struct\" href=\"menoh/variable_profile/struct.VariableProfileTable.html\" title=\"struct menoh::variable_profile::VariableProfileTable\">VariableProfileTable</a>",synthetic:false,types:["menoh::variable_profile::VariableProfileTable"]},{text:"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html\" title=\"trait core::ops::drop::Drop\">Drop</a> for <a class=\"struct\" href=\"menoh/variable_profile/struct.VariableProfileTableBuilder.html\" title=\"struct menoh::variable_profile::VariableProfileTableBuilder\">VariableProfileTableBuilder</a>",synthetic:false,types:["menoh::variable_profile::VariableProfileTableBuilder"]},];
+
+            if (window.register_implementors) {
+                window.register_implementors(implementors);
+            } else {
+                window.pending_implementors = implementors;
+            }
+        
+})()

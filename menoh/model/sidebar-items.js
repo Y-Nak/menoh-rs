@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Model","Model defined by ONNX."],["ModelBuilder","Builder of model."]]});

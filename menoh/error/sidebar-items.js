@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Error",""]],"fn":[["cvt","Convert error code defined in Menoh C API to Error."],["cvt_r","Convert error code defined in Menoh C API to Error."]]});
