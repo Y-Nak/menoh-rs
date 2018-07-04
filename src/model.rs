@@ -2,7 +2,7 @@ use std;
 use std::collections::HashMap;
 use std::ffi::CString;
 use std::marker::PhantomData;
-use std::mem;
+use std::{mem, slice};
 
 use libc;
 use libc::c_void;
@@ -12,52 +12,21 @@ use ffi;
 use model_data::ModelData;
 use variable_profile::{Dtype, VariableProfileTable};
 
-#[derive(Clone, Copy)]
-pub struct Buffer<'a> {
-    ptr: *mut c_void,
-    size: usize,
-    len: usize,
-    dtype: Dtype,
-    _phantom: PhantomData<&'a c_void>,
-}
-
 pub struct ModelBuilder<'a, 's> {
     handle: ffi::menoh_model_builder_handle,
-    external_bufs: HashMap<&'s str, Buffer<'a>>,
+    external_bufs: HashMap<&'s str, RawBuffer<'a>>,
 }
 
 pub struct Model<'a, 's> {
-    external_bufs: HashMap<&'s str, Buffer<'a>>,
+    external_bufs: HashMap<&'s str, RawBuffer<'a>>,
     handle: ffi::menoh_model_handle,
 }
 
-impl<'a> Buffer<'a> {
-    pub fn new<T>(buf: &'a mut [T], dtype: Dtype) -> Self {
-        let buf_size = mem::size_of::<T>() * buf.len();
-        Buffer {
-            ptr: buf.as_mut_ptr() as *mut c_void,
-            size: buf_size,
-            len: buf.len(),
-            dtype,
-            _phantom: PhantomData,
-        }
-    }
-
-    pub fn update<T>(&mut self, buf: &mut [T]) -> Result<(), Error> {
-        let len_as_byte = mem::size_of::<T>() * buf.len();
-        if len_as_byte != self.size {
-            // TODO: error type
-            return Err(Error::StdError);
-        }
-        unsafe {
-            libc::memcpy(self.ptr, buf.as_ptr() as *const c_void, self.size);
-        }
-        Ok(())
-    }
-
-    pub fn as_slice<T>(&self) -> &'a [T] {
-        unsafe { std::slice::from_raw_parts(self.ptr as *const T, self.len) }
-    }
+#[derive(Clone)]
+struct RawBuffer<'a> {
+    pub data: *mut c_void,
+    len: usize,
+    _phantom: PhantomData<&'a c_void>,
 }
 
 impl<'a, 's> ModelBuilder<'a, 's> {
@@ -76,20 +45,21 @@ impl<'a, 's> ModelBuilder<'a, 's> {
     }
 
     // TODO: Varidate external buffer size
-    pub fn attach_external_buffer(
+    pub fn attach_external_buffer<T: Default + Copy>(
         &mut self,
         name: &'s str,
-        buffer: Buffer<'a>,
+        buffer: &'a mut [T],
     ) -> Result<(), Error> {
         let name_c_expr = CString::new(name).map_err(|_| Error::VariableNotFound)?;
+        let raw_buffer = RawBuffer::from(buffer);
         cvt_r(|| unsafe {
             ffi::menoh_model_builder_attach_external_buffer(
                 self.handle,
                 name_c_expr.as_ptr(),
-                buffer.ptr,
+                raw_buffer.data,
             )
         })?;
-        self.external_bufs.insert(name, buffer);
+        self.external_bufs.insert(name, raw_buffer);
         Ok(())
     }
 
@@ -98,7 +68,7 @@ impl<'a, 's> ModelBuilder<'a, 's> {
         model_data: &ModelData,
         backend_name: &str,
         backend_config: &str,
-    ) -> Result<Model, Error> {
+    ) -> Result<Model<'a, 's>, Error> {
         let backend_name = CString::new(backend_name).map_err(|_| Error::VariableNotFound)?;
         let backend_config = CString::new(backend_config).map_err(|_| Error::VariableNotFound)?;
         let mut model_handle: ffi::menoh_model_handle = unsafe { mem::uninitialized() };
@@ -124,34 +94,45 @@ impl<'a, 's> Model<'a, 's> {
         Ok(())
     }
 
-    pub fn get_attached_buffer(&self, name: &str) -> Result<Buffer<'a>, Error> {
-        self.external_bufs
-            .get(name)
-            .ok_or(Error::VariableNotFound)
-            .map(|buf| *buf)
+    pub fn get_attached_buffer<T>(&self, name: &str) -> Result<&'a [T], Error> {
+        let raw_buf = self.external_bufs.get(name).ok_or(Error::VariableNotFound)?;
+        Ok(raw_buf.as_slice())
     }
 
-    pub fn get_internal_buffer(&self, name: &str) -> Result<Buffer, Error> {
+    pub fn get_attached_buffer_mut<T>(&self, name: &str) -> Result<&'a mut [T], Error> {
+        let raw_buf = self.external_bufs.get(name).ok_or(Error::VariableNotFound)?;
+        Ok(raw_buf.as_mut_slice())
+    }
+
+    pub fn get_internal_buffer<T>(&self, name: &str) -> Result<&[T], Error> {
         let name_c_expr = CString::new(name).map_err(|_| Error::VariableNotFound)?;
-        let dtype = self.get_dtype(&name_c_expr)?;
+        //let dtype = self.get_dtype(&name_c_expr)?;
         let len = self.get_variable_len(&name_c_expr)?;
 
         let ptr = self.get_buf_handle(&name_c_expr)?;
-        // TODO: Think on dtype handling
-        let size = match dtype {
-            Dtype::Float => len * mem::size_of::<f32>(),
-        };
+        //// TODO: Think on dtype handling
+        //let size = match dtype {
+        //    Dtype::Float => len * mem::size_of::<f32>(),
+        //};
 
-        Ok(Buffer {
-            ptr,
-            size,
-            len,
-            dtype,
-            _phantom: PhantomData,
-        })
+        unsafe { Ok(slice::from_raw_parts(ptr as _, len)) }
     }
 
-    fn get_dtype(&self, name: &CString) -> Result<Dtype, Error> {
+    pub fn get_internal_buffer_mut<T>(&self, name: &str) -> Result<&[T], Error> {
+        let name_c_expr = CString::new(name).map_err(|_| Error::VariableNotFound)?;
+        //let dtype = self.get_dtype(&name_c_expr)?;
+        let len = self.get_variable_len(&name_c_expr)?;
+
+        let ptr = self.get_buf_handle(&name_c_expr)?;
+        //// TODO: Think on dtype handling
+        //let size = match dtype {
+        //    Dtype::Float => len * mem::size_of::<f32>(),
+        //};
+
+        unsafe { Ok(slice::from_raw_parts_mut(ptr as _, len)) }
+    }
+
+    pub fn get_dtype(&self, name: &CString) -> Result<Dtype, Error> {
         let mut dtype = ffi::menoh_dtype::default();
         cvt_r(|| unsafe {
             ffi::menoh_model_get_variable_dtype(
@@ -208,6 +189,24 @@ impl<'a, 's> Model<'a, 's> {
             )
         })?;
         Ok(handle)
+    }
+}
+
+impl<'a> RawBuffer<'a> {
+    fn from<T: Copy + Default>(external_buffer: &'a mut [T]) -> RawBuffer<'a> {
+        RawBuffer {
+            data: external_buffer.as_mut_ptr() as _,
+            len: external_buffer.len(),
+            _phantom: PhantomData,
+        }
+    }
+
+    fn as_slice<T>(&self) -> &'a [T] {
+        unsafe { slice::from_raw_parts(self.data as _, self.len) }
+    }
+
+    fn as_mut_slice<T>(&self) -> &'a mut [T] {
+        unsafe { slice::from_raw_parts_mut(self.data as _, self.len) }
     }
 }
 
