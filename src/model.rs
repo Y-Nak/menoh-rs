@@ -24,7 +24,7 @@ pub struct ModelBuilder<'a, 's> {
     external_bufs: HashMap<&'s str, RawBuffer<'a>>,
 }
 
-/// Model defined by ONNX.
+/// Main struct running inference.
 ///
 /// An instance of `Model` is built by `ModelBuilder`
 ///
