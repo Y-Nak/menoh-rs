@@ -38,7 +38,7 @@
 //!
 //! let mut model_builder = mehoh::ModelBuilder::new(&vpt).unwrap();
 //! model_builder
-//!     .attach_external_buffer(CONV1_1_IN_NAME, &buffer)
+//!     .attach_external_buffer(CONV1_1_IN_NAME, &buffer, &vpt)
 //!     .unwrap();
 //!
 //! let mut model = model_builder
