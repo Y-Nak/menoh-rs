@@ -1,0 +1,45 @@
+# borrowed greater part from
+# https://github.com/pfnet-research/menoh/blob/master/.travis.yml
+# MIT License
+
+sudo: required
+language: rust
+os:
+  - linux
+  - osx
+addons:
+    apt:
+        sources:
+            - ubuntu-toolchain-r-test
+            - sourceline: 'ppa:maarten-fonville/protobuf'
+        packages:
+            - gcc-7
+            - g++-7
+            - cmake-data
+            - cmake
+            - libopencv-dev
+            - libprotobuf-dev
+            - protobuf-compiler
+cache:
+    directories:
+        - $HOME/mkl-dnn
+        - $HOME/menoh
+install:
+    - |
+      if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+        brew update
+        brew upgrade python
+        export PATH=/usr/local/opt/python/libexec/bin:$PATH
+        brew install numpy || true
+        brew install opencv mkl-dnn protobuf
+      fi
+    - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sh .travis/install_mkldnn.sh; fi
+    - .travis/install_menoh.sh
+    - ./fetch_resource.py
+before_script:
+    - ls -R $HOME/mkl-dnn
+    - export LD_LIBRARY_PATH=$HOME/menoh/lib:$HOME/mkl-dnn/lib:$LD_LIBRARY_PATH
+    - export LIBRARY_PATH=$HOME/menoh/lib:$HOME/mkl-dnn/lib:$LIBRARY_PATH
+
+script:
+    - cargo test
