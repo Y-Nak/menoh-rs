@@ -114,6 +114,7 @@ fn main() {
         .build_model(&model_data, "mkldnn", "")
         .unwrap();
 
+    println!("#### Inferring from hen image ####");
     model.run().unwrap();
 
     print_top_category(
@@ -125,6 +126,7 @@ fn main() {
     let cat_im = to_input_vec(image::open(CAT_IMAGE_PATH).unwrap());
     buffer.update(&cat_im).unwrap();
 
+    println!("#### Inferring from cat image ####");
     model.run().unwrap();
     print_top_category(
         model.get_internal_buffer::<f32>(SOFTMAX_OUT_NAME).unwrap(),
