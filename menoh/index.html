@@ -37,7 +37,7 @@
 
 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">model_builder</span> <span class="op">=</span> <span class="ident">mehoh</span>::<span class="ident">ModelBuilder</span>::<span class="ident">new</span>(<span class="kw-2">&amp;</span><span class="ident">vpt</span>).<span class="ident">unwrap</span>();
 <span class="ident">model_builder</span>
-    .<span class="ident">attach_external_buffer</span>(<span class="ident">CONV1_1_IN_NAME</span>, <span class="kw-2">&amp;</span><span class="ident">buffer</span>)
+    .<span class="ident">attach_external_buffer</span>(<span class="ident">CONV1_1_IN_NAME</span>, <span class="kw-2">&amp;</span><span class="ident">buffer</span>, <span class="kw-2">&amp;</span><span class="ident">vpt</span>)
     .<span class="ident">unwrap</span>();
 
 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">model</span> <span class="op">=</span> <span class="ident">model_builder</span>
