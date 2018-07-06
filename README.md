@@ -17,7 +17,8 @@
 ## Getting Started
 
 ### Prerequisities
-[Menoh](https://github.com/pfnet-research/menoh)
+* Rust 1.27+
+* [Menoh](https://github.com/pfnet-research/menoh)
 
 ### Run VGG16 Example Code 
 
