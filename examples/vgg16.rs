@@ -118,7 +118,10 @@ fn main() {
     model.run().unwrap();
 
     print_top_category(
-        model.get_internal_buffer::<f32>(SOFTMAX_OUT_NAME).unwrap(),
+        model
+            .get_internal_buffer::<f32>(SOFTMAX_OUT_NAME)
+            .unwrap()
+            .as_slice(),
         &categories,
     );
 
@@ -129,7 +132,10 @@ fn main() {
     println!("#### Inferring from cat image ####");
     model.run().unwrap();
     print_top_category(
-        model.get_internal_buffer::<f32>(SOFTMAX_OUT_NAME).unwrap(),
+        model
+            .get_internal_buffer::<f32>(SOFTMAX_OUT_NAME)
+            .unwrap()
+            .as_slice(),
         &categories,
     );
 }

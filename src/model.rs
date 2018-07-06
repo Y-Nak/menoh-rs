@@ -172,10 +172,10 @@ impl<'a, 's> Model<'a, 's> {
         Ok(())
     }
 
-    /// Get reference to attached buffer.
+    /// Get attached buffer.
     ///
-    /// The reference to the buffer can live longer than this instance.
-    pub fn get_attached_buffer<T>(&self, name: &str) -> Result<&'a [T], Error>
+    /// Buffer lifetime is bounded by buffer internal data
+    pub fn get_attached_buffer<T>(&self, name: &str) -> Result<Buffer<'a, T>, Error>
     where
         T: DtypeCompatible,
     {
@@ -184,28 +184,13 @@ impl<'a, 's> Model<'a, 's> {
 
         self.validate_dtype::<T>(&name_c_expr)?;
 
-        Ok(raw_buf.as_slice())
-    }
-
-    /// Get reference to attached buffer.
-    ///
-    /// The reference to the buffer can live longer than this instance.
-    pub fn get_attached_buffer_mut<T>(&self, name: &str) -> Result<&'a mut [T], Error>
-    where
-        T: DtypeCompatible,
-    {
-        let raw_buf = self.external_bufs.get(name).ok_or(Error::VariableNotFound)?;
-        let name_c_expr = CString::new(name).map_err(|_| Error::VariableNotFound)?;
-
-        self.validate_dtype::<T>(&name_c_expr)?;
-
-        Ok(raw_buf.as_mut_slice())
+        Ok(Buffer::new(raw_buf.as_mut_slice()))
     }
 
     /// Get reference to buffer generated inside model.
     ///
-    /// The reference lifetime is bounded by this instance.
-    pub fn get_internal_buffer<T>(&self, name: &str) -> Result<&[T], Error>
+    /// Buffer lifetime is bounded by this instance.
+    pub fn get_internal_buffer<T>(&self, name: &str) -> Result<Buffer<T>, Error>
     where
         T: DtypeCompatible,
     {
@@ -219,27 +204,9 @@ impl<'a, 's> Model<'a, 's> {
 
         let len = self.get_variable_len(&name_c_expr)?;
         let ptr = self.get_buf_handle(&name_c_expr)?;
-        unsafe { Ok(slice::from_raw_parts(ptr as _, len)) }
-    }
-
-    /// Get mutable reference to buffer generated inside model.
-    ///
-    /// The reference lifetime is bounded by this instance.
-    pub fn get_internal_buffer_mut<T>(&self, name: &str) -> Result<&mut [T], Error>
-    where
-        T: DtypeCompatible,
-    {
-        if self.external_bufs.contains_key(name) {
-            return Err(Error::NotInternalBuffer);
-        }
-
-        let name_c_expr = CString::new(name).map_err(|_| Error::VariableNotFound)?;
-
-        self.validate_dtype::<T>(&name_c_expr)?;
-
-        let len = self.get_variable_len(&name_c_expr)?;
-        let ptr = self.get_buf_handle(&name_c_expr)?;
-        unsafe { Ok(slice::from_raw_parts_mut(ptr as _, len)) }
+        Ok(Buffer::new(unsafe {
+            slice::from_raw_parts_mut(ptr as _, len)
+        }))
     }
 
     /// Get dtype by name
@@ -339,10 +306,6 @@ impl<'a> RawBuffer<'a> {
             len: buffer.as_slice().len(),
             _phantom: PhantomData,
         }
-    }
-
-    fn as_slice<T>(&self) -> &'a [T] {
-        unsafe { slice::from_raw_parts(self.data as _, self.len) }
     }
 
     fn as_mut_slice<T>(&self) -> &'a mut [T] {
