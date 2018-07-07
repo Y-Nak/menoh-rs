@@ -30,7 +30,6 @@
 //!         INPUT_HEIGHT,
 //!         INPUT_WIDTH,
 //!     ];
-//!
 //!     // register profile
 //!     vpt_builder
 //!         .add_input_profile(INPUT_VARIABLE_NAME, menoh::Dtype::Float, &input_dims)
@@ -117,6 +116,7 @@ mod variable_profile;
 
 pub use buffer::Buffer;
 pub use dtype::{Dtype, DtypeCompatible};
+pub use error::Error;
 pub use model::{Model, ModelBuilder};
 pub use model_data::ModelData;
 pub use variable_profile::{VariableProfile, VariableProfileTable, VariableProfileTableBuilder};
