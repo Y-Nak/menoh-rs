@@ -38,7 +38,7 @@ fn reorder_to_chw(im: &image::DynamicImage) -> Vec<f32> {
     for h in 0..im_h {
         for w in 0..im_w {
             for c in 0..3 {
-                input_im[(c * (im_h * im_w) + h * im_w + w) as usize] =
+                input_im[(c * (im_h * im_w) + w * im_h + h) as usize] =
                     im.get_pixel(h as u32, w as u32)[2 - c as usize] as f32;
             }
         }
