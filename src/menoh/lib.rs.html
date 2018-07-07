@@ -126,8 +126,8 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! # Examples</span>
 <span class="doccomment">//! ```rust</span>
-<span class="doccomment">//! extern crate image;</span>
 <span class="doccomment">//! extern crate menoh;</span>
+<span class="doccomment">//! extern crate image;</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! use image::GenericImage;</span>
 <span class="doccomment">//!</span>
@@ -139,8 +139,8 @@
 <span class="doccomment">//! const INPUT_WIDTH: i32 = 28;</span>
 <span class="doccomment">//! const INPUT_HEIGHT: i32 = 28;</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! const MODEL_PATH: &amp;str = &quot;test/resource/mnist.onnx&quot;;</span>
-<span class="doccomment">//! const IMAGE_PATH: &amp;str = &quot;test/resource/1.png&quot;;</span>
+<span class="doccomment">//! const MODEL_PATH: &amp;str = &quot;tests/resource/mnist.onnx&quot;;</span>
+<span class="doccomment">//! const IMAGE_PATH: &amp;str = &quot;tests/resource/1.png&quot;;</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! fn main() {</span>
 <span class="doccomment">//!     // load category file</span>
@@ -153,7 +153,6 @@
 <span class="doccomment">//!         INPUT_HEIGHT,</span>
 <span class="doccomment">//!         INPUT_WIDTH,</span>
 <span class="doccomment">//!     ];</span>
-<span class="doccomment">//!</span>
 <span class="doccomment">//!     // register profile</span>
 <span class="doccomment">//!     vpt_builder</span>
 <span class="doccomment">//!         .add_input_profile(INPUT_VARIABLE_NAME, menoh::Dtype::Float, &amp;input_dims)</span>
@@ -240,6 +239,7 @@
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">buffer</span>::<span class="ident">Buffer</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">dtype</span>::{<span class="ident">Dtype</span>, <span class="ident">DtypeCompatible</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">error</span>::<span class="ident">Error</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">model</span>::{<span class="ident">Model</span>, <span class="ident">ModelBuilder</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">model_data</span>::<span class="ident">ModelData</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">variable_profile</span>::{<span class="ident">VariableProfile</span>, <span class="ident">VariableProfileTable</span>, <span class="ident">VariableProfileTableBuilder</span>};
