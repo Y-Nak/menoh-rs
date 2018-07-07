@@ -33,6 +33,7 @@ impl ModelData {
         Ok(ModelData { handle })
     }
 
+    // Optimize model data
     pub fn optimize(&mut self, vpt: &VariableProfileTable) -> Result<(), Error> {
         cvt_r(|| unsafe { ffi::menoh_model_data_optimize(self.handle, vpt.get_handle()) })?;
         Ok(())
@@ -47,5 +48,42 @@ impl ModelData {
 impl Drop for ModelData {
     fn drop(&mut self) {
         unsafe { ffi::menoh_delete_model_data(self.handle) }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::path::PathBuf;
+
+    const ROOT_DIR: &str = env!("CARGO_MANIFEST_DIR");
+
+    fn get_model_path(name: &str) -> PathBuf {
+        let mut path = PathBuf::new();
+        path.push(ROOT_DIR);
+        path.push("test");
+        path.push("resource");
+        path.push(name);
+        path
+    }
+
+    #[test]
+    fn load_onnx_success() {
+        let model_path = get_model_path("mnist.onnx");
+        assert!(ModelData::new(model_path).is_ok());
+    }
+
+    #[test]
+    fn load_onnx_fail_with_wrong_path() {
+        assert_eq!(ModelData::new("").err().unwrap(), Error::InvalidFileName);
+    }
+
+    #[test]
+    fn load_onnx_fail_with_wrong_format() {
+        let invalid_model_path = get_model_path("invalid_onnx.onnx");
+        assert_eq!(
+            ModelData::new(invalid_model_path).err().unwrap(),
+            Error::ONNXParseError
+        )
     }
 }
