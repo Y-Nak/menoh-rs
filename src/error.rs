@@ -7,7 +7,7 @@ use std::fmt;
 use ffi;
 use ffi::menoh_get_last_error_message;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum Error {
     // C-API Defined error
     StdError,
