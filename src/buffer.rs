@@ -43,3 +43,27 @@ where
         self.data
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn update_buffer_success() {
+        let mut v: Vec<f32> = vec![0., 1., 2.];
+        let mut buffer = Buffer::new(&mut v);
+
+        let v = vec![10., 11., 12.];
+        buffer.update(&v).unwrap();
+        assert_eq!(buffer.as_slice(), v.as_slice());
+    }
+
+    #[test]
+    fn update_buffer_fail() {
+        let mut v: Vec<f32> = vec![Default::default(); 3];
+        let mut buffer = Buffer::new(&mut v);
+
+        let v = vec![Default::default(); 4];
+        assert_eq!(buffer.update(&v).err().unwrap(), Error::InvalidBufferSize);
+    }
+}
