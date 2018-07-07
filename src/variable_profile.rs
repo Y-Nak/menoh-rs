@@ -195,3 +195,13 @@ fn variable_profile_table_get_dims_at(
     })?;
     Ok(dst_dim)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn vpt_builder_new() {
+        assert!(VariableProfileTableBuilder::new().is_ok());
+    }
+}
