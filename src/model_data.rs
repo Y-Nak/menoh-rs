@@ -33,7 +33,7 @@ impl ModelData {
         Ok(ModelData { handle })
     }
 
-    // Optimize model data
+    /// Optimize model data
     pub fn optimize(&mut self, vpt: &VariableProfileTable) -> Result<(), Error> {
         cvt_r(|| unsafe { ffi::menoh_model_data_optimize(self.handle, vpt.get_handle()) })?;
         Ok(())
