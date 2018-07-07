@@ -103,7 +103,7 @@ extern "C" {
     pub fn menoh_delete_model_data(model_data: menoh_model_data_handle);
     pub fn menoh_model_data_optimize(
         model_data: menoh_model_data_handle,
-        variable_profile_table: menoh_variable_profile_table_builder_handle,
+        variable_profile_table: menoh_variable_profile_table_handle,
     ) -> menoh_error_code;
 
     pub fn menoh_make_variable_profile_table_builder(

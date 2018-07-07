@@ -8,6 +8,7 @@ use std::path::Path;
 use error::{cvt_r, Error};
 use ffi;
 use ffi::menoh_model_data_handle;
+use variable_profile::VariableProfileTable;
 
 /// Represent model data defined by ONNX file.
 pub struct ModelData {
@@ -30,6 +31,11 @@ impl ModelData {
             )
         })?;
         Ok(ModelData { handle })
+    }
+
+    pub fn optimize(&mut self, vpt: &VariableProfileTable) -> Result<(), Error> {
+        cvt_r(|| unsafe { ffi::menoh_model_data_optimize(self.handle, vpt.get_handle()) })?;
+        Ok(())
     }
 
     #[doc(hidden)]
