@@ -77,7 +77,7 @@ fn main() {
     // load category file
     let categories = parse_category(CATEGORY_LIST_PATH);
 
-    let model_data = menoh::ModelData::new(MODEL_PATH).unwrap();
+    let mut model_data = menoh::ModelData::new(MODEL_PATH).unwrap();
     let mut vpt_builder = menoh::VariableProfileTableBuilder::new().unwrap();
 
     let input_dims = vec![
@@ -98,6 +98,8 @@ fn main() {
     let vpt = vpt_builder
         .build_variable_profile_table(&model_data)
         .unwrap();
+
+    model_data.optimize(&vpt).unwrap();
 
     // Attach buffer to input variable.
     // This is not necessary operation.
