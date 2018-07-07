@@ -3,8 +3,8 @@
 //!
 //! # Examples
 //! ```rust
-//! extern crate image;
 //! extern crate menoh;
+//! extern crate image;
 //!
 //! use image::GenericImage;
 //!
@@ -16,8 +16,8 @@
 //! const INPUT_WIDTH: i32 = 28;
 //! const INPUT_HEIGHT: i32 = 28;
 //!
-//! const MODEL_PATH: &str = "test/resource/mnist.onnx";
-//! const IMAGE_PATH: &str = "test/resource/1.png";
+//! const MODEL_PATH: &str = "tests/resource/mnist.onnx";
+//! const IMAGE_PATH: &str = "tests/resource/1.png";
 //!
 //! fn main() {
 //!     // load category file

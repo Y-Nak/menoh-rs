@@ -61,7 +61,7 @@ mod tests {
     fn get_model_path(name: &str) -> PathBuf {
         let mut path = PathBuf::new();
         path.push(ROOT_DIR);
-        path.push("test");
+        path.push("tests");
         path.push("resource");
         path.push(name);
         path
