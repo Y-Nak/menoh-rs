@@ -37,9 +37,15 @@ install:
     - .travis/install_menoh.sh
     - ./fetch_resource.py
 before_script:
+    - cargo install cargo-travis
     - ls -R $HOME/mkl-dnn
     - export LD_LIBRARY_PATH=$HOME/menoh/lib:$HOME/mkl-dnn/lib:$LD_LIBRARY_PATH
     - export LIBRARY_PATH=$HOME/menoh/lib:$HOME/mkl-dnn/lib:$LIBRARY_PATH
 
 script:
     - cargo test
+
+after_success:
+    - |
+      cargo coverage --verbose &&
+      bash <(curl -s https://codecov.io/bash) -s target/kcov
