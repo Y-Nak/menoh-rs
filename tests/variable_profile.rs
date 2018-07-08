@@ -7,7 +7,8 @@ use utils::constant;
 
 #[test]
 fn build_vpt_success() {
-    utils::create_vpt_mock();
+    let model_data = menoh::ModelData::new(constant::MODEL_PATH).unwrap();
+    utils::create_vpt_mock(&model_data);
 }
 
 #[test]
@@ -91,7 +92,8 @@ fn add_output_profile_fail_with_invalid_name() {
 #[test]
 #[allow(warnings)]
 fn get_variable_profile_success() {
-    let vpt = utils::create_vpt_mock();
+    let model_data = menoh::ModelData::new(constant::MODEL_PATH).unwrap();
+    let vpt = utils::create_vpt_mock(&model_data);
     let input_profile = vpt.get_variable_profile(constant::INPUT_VARIABLE_NAME)
         .unwrap();
     assert_matches!(input_profile.dtype, menoh::Dtype::Float);
