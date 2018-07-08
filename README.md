@@ -1,14 +1,16 @@
 # Menoh-rs
 
-| Linux/MacOS | License
-| :----  | :---- 
-[![Linux/MacOS build status]][travis] | [![License]][MIT]
+| Linux/MacOS | License | Coverage
+| :----  | :---- | :----
+[![Linux/MacOS build status]][travis] | [![License]][MIT] | [![Coverage]][Codecov]
 
 
 [Linux/MacOS build status]: https://travis-ci.com/Y-Nak/menoh-rs.svg?branch=master
 [travis]: https://travis-ci.com/Y-Nak/menoh-rs
 [License]: https://img.shields.io/badge/License-MIT-yellow.svg
 [MIT]: https://opensource.org/licenses/MIT
+[Coverage]: https://codecov.io/gh/Y-Nak/menoh-rs/branch/master/graph/badge.svg
+[Codecov]: https://codecov.io/gh/Y-Nak/menoh-rs
 
 **Menoh-rs: Rust wrapper of [Menoh](https://github.com/pfnet-research/menoh)**  
   
