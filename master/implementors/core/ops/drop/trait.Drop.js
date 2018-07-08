@@ -1,0 +1,10 @@
+(function() {var implementors = {};
+implementors["menoh"] = [{text:"impl&lt;'a, 's&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html\" title=\"trait core::ops::drop::Drop\">Drop</a> for <a class=\"struct\" href=\"menoh/struct.ModelBuilder.html\" title=\"struct menoh::ModelBuilder\">ModelBuilder</a>&lt;'a, 's&gt;",synthetic:false,types:["menoh::model::ModelBuilder"]},{text:"impl&lt;'a, 's&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html\" title=\"trait core::ops::drop::Drop\">Drop</a> for <a class=\"struct\" href=\"menoh/struct.Model.html\" title=\"struct menoh::Model\">Model</a>&lt;'a, 's&gt;",synthetic:false,types:["menoh::model::Model"]},{text:"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html\" title=\"trait core::ops::drop::Drop\">Drop</a> for <a class=\"struct\" href=\"menoh/struct.ModelData.html\" title=\"struct menoh::ModelData\">ModelData</a>",synthetic:false,types:["menoh::model_data::ModelData"]},{text:"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html\" title=\"trait core::ops::drop::Drop\">Drop</a> for <a class=\"struct\" href=\"menoh/struct.VariableProfileTable.html\" title=\"struct menoh::VariableProfileTable\">VariableProfileTable</a>",synthetic:false,types:["menoh::variable_profile::VariableProfileTable"]},{text:"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/ops/drop/trait.Drop.html\" title=\"trait core::ops::drop::Drop\">Drop</a> for <a class=\"struct\" href=\"menoh/struct.VariableProfileTableBuilder.html\" title=\"struct menoh::VariableProfileTableBuilder\">VariableProfileTableBuilder</a>",synthetic:false,types:["menoh::variable_profile::VariableProfileTableBuilder"]},];
+
+            if (window.register_implementors) {
+                window.register_implementors(implementors);
+            } else {
+                window.pending_implementors = implementors;
+            }
+        
+})()
