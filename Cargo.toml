@@ -8,3 +8,4 @@ libc = "0.2"
 
 [dev-dependencies]
 image = "*"
+matches = "0.1"

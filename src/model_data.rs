@@ -75,13 +75,21 @@ mod tests {
 
     #[test]
     fn load_onnx_fail_with_wrong_path() {
-        assert_eq!(ModelData::new("").err().unwrap(), Error::InvalidFileName);
+        assert_matches!(ModelData::new("").err().unwrap(), Error::InvalidFileName);
+    }
+
+    #[test]
+    fn load_onnx_fail_with_broken_string() {
+        assert_matches!(
+            ModelData::new("p\0ath").err().unwrap(),
+            Error::InvalidFileName
+        );
     }
 
     #[test]
     fn load_onnx_fail_with_wrong_format() {
         let invalid_model_path = get_model_path("invalid_onnx.onnx");
-        assert_eq!(
+        assert_matches!(
             ModelData::new(invalid_model_path).err().unwrap(),
             Error::ONNXParseError
         )

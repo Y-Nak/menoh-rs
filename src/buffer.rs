@@ -64,6 +64,6 @@ mod tests {
         let mut buffer = Buffer::new(&mut v);
 
         let v = vec![Default::default(); 4];
-        assert_eq!(buffer.update(&v).err().unwrap(), Error::InvalidBufferSize);
+        assert_matches!(buffer.update(&v).err().unwrap(), Error::InvalidBufferSize);
     }
 }

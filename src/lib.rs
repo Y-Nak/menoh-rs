@@ -105,6 +105,10 @@
 
 extern crate libc;
 
+#[cfg(test)]
+#[macro_use]
+extern crate matches;
+
 pub mod ffi;
 
 mod buffer;

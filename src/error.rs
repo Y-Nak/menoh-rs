@@ -7,7 +7,7 @@ use std::fmt;
 use ffi;
 use ffi::menoh_get_last_error_message;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug)]
 pub enum Error {
     // C-API Defined error
     StdError,
@@ -115,7 +115,7 @@ mod tests {
     #[test]
     fn cvt_to_error() {
         let res = cvt(ffi::menoh_error_code_std_error);
-        assert_eq!(res, Err(Error::StdError));
+        assert_matches!(res.err().unwrap(), Error::StdError);
     }
 
     #[test]
