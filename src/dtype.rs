@@ -5,7 +5,7 @@ use std;
 use ffi;
 
 /// Dtype that accepted by menoh model.
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 pub enum Dtype {
     Float,
 }
