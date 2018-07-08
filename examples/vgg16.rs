@@ -113,7 +113,7 @@ fn main() {
         .unwrap();
 
     let mut model = model_builder
-        .build_model(&model_data, "mkldnn", "")
+        .build_model(&model_data, menoh::Backend::MKL_DNN, "")
         .unwrap();
 
     println!("#### Inferring from hen image ####");

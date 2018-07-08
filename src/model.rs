@@ -12,6 +12,7 @@ use libc::c_void;
 use dtype::{Dtype, DtypeCompatible};
 use error::{cvt_r, Error};
 use ffi;
+use Backend;
 use Buffer;
 use ModelData;
 use VariableProfileTable;
@@ -143,10 +144,10 @@ impl<'a, 's> ModelBuilder<'a, 's> {
     pub fn build_model(
         &self,
         model_data: &ModelData,
-        backend_name: &str,
+        backend_name: Backend,
         backend_config: &str,
     ) -> Result<Model<'a, 's>, Error> {
-        let backend_name = CString::new(backend_name).map_err(|_| Error::VariableNotFound)?;
+        let backend_name = CString::new(backend_name.value()).map_err(|_| Error::VariableNotFound)?;
         let backend_config = CString::new(backend_config).map_err(|_| Error::VariableNotFound)?;
         let mut model_handle: ffi::menoh_model_handle = unsafe { mem::uninitialized() };
         cvt_r(|| unsafe {

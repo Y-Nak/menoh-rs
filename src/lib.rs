@@ -55,7 +55,7 @@
 //!         .unwrap();
 //!
 //!     let mut model = model_builder
-//!         .build_model(&model_data, "mkldnn", "")
+//!         .build_model(&model_data, menoh::Backend::MKL_DNN, "")
 //!         .unwrap();
 //!
 //!     model.run().unwrap();
@@ -111,6 +111,7 @@ extern crate matches;
 
 pub mod ffi;
 
+mod backend;
 mod buffer;
 mod dtype;
 mod error;
@@ -118,6 +119,7 @@ mod model;
 mod model_data;
 mod variable_profile;
 
+pub use backend::Backend;
 pub use buffer::Buffer;
 pub use dtype::{Dtype, DtypeCompatible};
 pub use error::Error;
