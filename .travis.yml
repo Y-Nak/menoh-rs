@@ -44,8 +44,11 @@ before_script:
 
 script:
     - cargo test
+    - cargo doc --no-deps
 
 after_success:
     - |
       cargo coverage --verbose &&
       bash <(curl -s https://codecov.io/bash) -s target/kcov
+
+    - cargo doc-upload
