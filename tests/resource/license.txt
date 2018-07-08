@@ -1,0 +1,4 @@
+Borrowed
+* 1.png
+* mnist.onnx
+from https://github.com/pfnet-research/menoh-haskell/tree/master/data MIT License.
