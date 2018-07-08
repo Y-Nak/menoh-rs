@@ -39,3 +39,14 @@ impl Dtype {
         self.type_id() == std::any::TypeId::of::<T>()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn is_compatible() {
+        let dtype = Dtype::Float;
+        assert!(dtype.is_compatible::<f32>())
+    }
+}
