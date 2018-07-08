@@ -1,4 +1,4 @@
-# Menoh-rs
+# Menoh-rs -- A Rust wrapper of [Menoh](https://github.com/pfnet-research/menoh)
 
 | Linux/MacOS | License | Coverage
 | :----  | :---- | :----
@@ -12,9 +12,7 @@
 [Coverage]: https://codecov.io/gh/Y-Nak/menoh-rs/branch/master/graph/badge.svg
 [Codecov]: https://codecov.io/gh/Y-Nak/menoh-rs
 
-**Menoh-rs: Rust wrapper of [Menoh](https://github.com/pfnet-research/menoh)**  
-  
-* [API Documentation](https://Y-Nak.github.io/menoh-rs/menoh)
+## [API Documentation](https://y-nak.github.io/menoh-rs/master/menoh)
 
 ## Getting Started
 
@@ -32,3 +30,4 @@ cargo run --example vgg16
 ## DISCLAIMER
 **This is my first Rust application, created for self-study purpose. 
 Please use at your own risk.**
+
